@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "description": "",
+  "devDependencies": {
+    "@google/clasp": "^2.4.1",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.2.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/google-apps-script": "^1.0.47",
+    "@types/jest": "^27.5.0",
+    "@types/react": "^18.0.12",
+    "@types/react-dom": "^18.0.5",
+    "parcel": "^2.6.0",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "react-scripts": "5.0.1",
+    "zx": "^6.1.0"
+  },
+  "scripts": {
+    "test": "react-scripts test",
+    "login": "npx zx package.json.md -- clasp-login",
+    "logout": "npx zx package.json.md -- clasp-logout",
+    "pull": "npx zx package.json.md -- pull-appscript",
+    "build": "npx zx package.json.md -- build-push"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
