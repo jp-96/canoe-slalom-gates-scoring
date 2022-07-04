@@ -16,14 +16,14 @@ export const useInput = (initialValue): [inputProps, () => void] => {
   ];
 };
 
-export const useGetSheetData = (sheetName: string): { loading: boolean, error: any, sections: Sheetdata.section[], setSections: React.Dispatch<React.SetStateAction<Sheetdata.section[]>> } => {
+export const useGetSheetData = (sheetName: string, beginGate: number, gateLength: number): { loading: boolean, error: any, sections: Sheetdata.section[], setSections: React.Dispatch<React.SetStateAction<Sheetdata.section[]>> } => {
   const emptySections: Sheetdata.section[] = [];
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
   const [sections, setSections] = useState(emptySections);
 
   useEffect(() => {
-    serverFunctions.getData(sheetName)
+    serverFunctions.getData(sheetName, beginGate, gateLength)
       .then(sheetData => setSections(sheetData.sections))
       .catch(setError)
       .finally(() => setLoading(false));

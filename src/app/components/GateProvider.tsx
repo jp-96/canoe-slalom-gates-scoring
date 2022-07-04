@@ -20,7 +20,9 @@ const GateContext = createContext<GateContextType>({
 export const useGates = () => useContext(GateContext);
 export default function GateProvider({ children }) {
     const sheetName = 'テストデータ';
-    const { loading, error, sections, setSections } = useGetSheetData(sheetName);
+    const beginGate = 1;
+    const gateLength = 5;
+    const { loading, error, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);
     const setPenalty = (race: string, bib: number, gateNumber: number, newPenalty: string) => {
         const setSection = (section) => (
             section.map(gate =>
@@ -35,7 +37,7 @@ export default function GateProvider({ children }) {
                     ? setSection(section)
                     : section)
         );
-        
+
         const orgSections = sections.filter(section => (section.race === race) && (section.bib === bib));
         if (orgSections.length === 1) {
             const orgGates = orgSections[0].gates.filter(gate => (gate.gateNumber === gateNumber));
@@ -43,7 +45,7 @@ export default function GateProvider({ children }) {
                 const isLocked = orgGates[0].isLocked;
                 orgSections[0].gates = [
                     {
-                        ...orgGates[0], 
+                        ...orgGates[0],
                         penalty: newPenalty,
                     }
                 ];

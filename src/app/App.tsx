@@ -1,6 +1,7 @@
 import React from 'react';
 import Logo from './Logo';
 //import './App.css'; // ==> ../index.html
+import SectionJudgeList from './components/SectionJudgeList';
 import GateJudge from './components/GateJudge';
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Logo className="App-logo" />
+        <SectionJudgeList />
         <p>
           Edit <code>src/app/App.tsx</code> and save to reload.
         </p>
@@ -19,12 +21,6 @@ function App() {
         >
           Learn React
         </a>
-        <GateJudge gate='11' />
-        <GateJudge gate='12' defaultPenalty='0' />
-        <GateJudge gate='13' defaultPenalty='2' />
-        <GateJudge gate='14' defaultPenalty='50' gateColor='red' />
-        <GateJudge gate='15' defaultPenalty='DNF' />
-        <Logo />
       </header>
     </div>
   );

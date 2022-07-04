@@ -10,10 +10,15 @@ function doGet(e: GoogleAppsScript.Events.DoGet) {
         .setTitle("React App on Google Apps Script");
 }
 
-function getData(sheetName: string): Penalties.SheetData {
-    return Penalties.getSheetData(sheetName);
+function getData(sheetName: string, beginGate: number, gateLength: number): Penalties.SheetData {
+    Logger.log(`sheetName:${sheetName}\nbeginGate: ${beginGate}\ngateLength: ${gateLength}`);
+    const data = Penalties.getSheetData(sheetName, beginGate, gateLength);
+    Logger.log(data);
+    return data;
 }
 
 function putData(sheetName: string, sheetData: Penalties.SheetData) {
+    Logger.log(`sheetName:${sheetName}`);
+    Logger.log(sheetData);
     Penalties.putSheetData(sheetName, sheetData);
 }

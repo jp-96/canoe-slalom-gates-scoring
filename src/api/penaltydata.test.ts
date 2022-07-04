@@ -16,7 +16,7 @@ function testPutSheetData() {
         section.gates[0].penalty = '0';
         section.gates[1].penalty = '2';
         section.gates[2].penalty = '50';
-        section.gates[3].penalty = 'DNS';
+        section.gates[3].penalty = 'DNF';
     });
     Penalties.putSheetData('テストデータ', sheetData);
 }
