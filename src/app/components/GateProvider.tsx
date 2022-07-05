@@ -23,38 +23,36 @@ export default function GateProvider({ children }) {
     const beginGate = 1;
     const gateLength = 5;
     const { loading, error, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);
-    const setPenalty = (race: string, bib: number, gateNumber: number, newPenalty: string) => {
-        const setSection = (section) => (
-            section.map(gate =>
+    const setPenalty = (race: string, bib: number, gateNumber: number, penalty: string) => {
+        const updateSectionGatePenalty = (section: Sheetdata.section) => {
+            const gates = section.gates.map(gate =>
                 gate.gateNumber === gateNumber
-                    ? { ...gate, newPenalty }
+                    ? { ...gate, penalty }
                     : gate
-            )
-        );
+            );
+            return { ...section, gates };
+        };
+        const modified = sections.map(section =>
+            (section.race === race) && (section.bib === bib)
+                ? updateSectionGatePenalty(section)
+                : section)
         setSections(
-            sections.map(section =>
-                (section.race === race) && (section.bib === bib)
-                    ? setSection(section)
-                    : section)
+            modified
         );
-
-        const orgSections = sections.filter(section => (section.race === race) && (section.bib === bib));
-        if (orgSections.length === 1) {
-            const orgGates = orgSections[0].gates.filter(gate => (gate.gateNumber === gateNumber));
-            if (orgGates.length === 1) {
-                const isLocked = orgGates[0].isLocked;
-                orgSections[0].gates = [
-                    {
-                        ...orgGates[0],
-                        penalty: newPenalty,
-                    }
-                ];
+        
+        const newSections = modified.filter(section => (section.race === race) && (section.bib === bib));
+        if (newSections.length === 1) {
+            const section = newSections[0];
+            const gates = section.gates.filter(gate => (gate.gateNumber === gateNumber));
+            if (gates.length === 1) {
+                const gate = gates[0];
                 const sheetData = {
-                    sections: orgSections,
+                    sections: [{ ...section, gates: [{ ...gate }] }],
                 }
                 serverFunctions.putData(sheetName, sheetData);
             }
         }
+        
     };
 
     if (error) {

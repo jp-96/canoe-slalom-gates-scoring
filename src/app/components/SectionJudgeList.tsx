@@ -3,7 +3,7 @@ import GateJudge from "./GateJudge";
 import { useGates } from "./GateProvider";
 
 function SectionJudgeList() {
-    const { sections, setPenalty } = useGates();
+    const { sections } = useGates();
 
     if (!sections.length) return <div>No start list.</div>;
 
@@ -13,7 +13,7 @@ function SectionJudgeList() {
                 <>
                     <h1>[{section.bib}] {section.race}</h1>
                     {section.gates.map(gate => (
-                        <GateJudge gateNumber={gate.gateNumber} gateColor={gate.isLocked ? "red" : "green"} defaultPenalty={gate.penalty}/>
+                        <GateJudge race={section.race} bib={section.bib} gateNumber={gate.gateNumber} penalty={gate.penalty} isLocked={gate.isLocked} />
                     ))}
                 </>
             ))}
