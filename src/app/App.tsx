@@ -1,12 +1,15 @@
 import React from 'react';
 import Logo from './Logo';
 //import './App.css'; // ==> ../index.html
+import SectionJudgeList from './components/SectionJudgeList';
+import GateJudge from './components/GateJudge';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
         <Logo className="App-logo" />
+        <SectionJudgeList />
         <p>
           Edit <code>src/app/App.tsx</code> and save to reload.
         </p>
@@ -18,7 +21,6 @@ function App() {
         >
           Learn React
         </a>
-        <Logo />
       </header>
     </div>
   );
