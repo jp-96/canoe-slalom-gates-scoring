@@ -9,7 +9,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <GateProvider queryParameter={"<?= queryParameter ?>"}>
+    <GateProvider appConfigString={"<?= appConfigString ?>"}>
       <App />
     </GateProvider>
   </React.StrictMode>

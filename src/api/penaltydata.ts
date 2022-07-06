@@ -15,8 +15,10 @@ namespace Penalties {
     gates: gate[];          // 
   }
 
+  export type sections = section[];
+
   export interface SheetData {
-    sections: section[];
+    sections: sections;
   }
 
   export function getSheetData(sheetName: string, beginGate: number, gateLength: number): SheetData {
