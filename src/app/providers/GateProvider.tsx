@@ -30,7 +30,7 @@ type GateContextType = {
 };
 
 const GateContext = createContext<GateContextType>({
-    error: new Error('GateProvider is Nothing'),
+    error: {name: 'GateContext.Provider is nothing.',},
     loading: false,
     sections: [],
     setPenalty: (race, bib, gateNumber, newPenalty) => undefined,

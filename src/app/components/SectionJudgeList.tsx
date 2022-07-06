@@ -16,7 +16,7 @@ function SectionJudgeList() {
 
     if (loading) {
         return (
-            <h1>L o a d i n g ...</h1>
+            <h1>Loading...</h1>
         );
     }
 
