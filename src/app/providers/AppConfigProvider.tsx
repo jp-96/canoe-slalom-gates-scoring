@@ -18,7 +18,7 @@ const AppConfigContext = createContext<AppConfigContextType>(defaultAppConfigCon
 export const useAppConfig = () => useContext(AppConfigContext);
 
 export default function AppConfigProvider({ children, appConfigString }) {
-    const appConfig = AppConfig.parseAppConfigString(appConfigString);    
+    const appConfig = AppConfig.parseAppConfigString(appConfigString);
     return (
         <AppConfigContext.Provider value={{ appConfig }}>
             {children}
