@@ -8,7 +8,9 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <GateProvider>
-    <App />
-  </GateProvider>
+  <React.StrictMode>
+    <GateProvider queryParameter={"<?= queryParameter ?>"}>
+      <App />
+    </GateProvider>
+  </React.StrictMode>
 );

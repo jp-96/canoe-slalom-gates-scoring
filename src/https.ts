@@ -8,9 +8,7 @@ function doGet(e: GoogleAppsScript.Events.DoGet) {
         return;
     }
     const template = HtmlService.createTemplateFromFile("index");
-    template.sheetName = p.sheetName;
-    template.beginGate = p.beginGate;
-    template.gateLength = p.gateLength;
+    template.queryParameter = JSON.stringify(p);
     return template
         .evaluate()
         .addMetaTag("viewport", "width=device-width, initial-scale=1.0")
@@ -24,8 +22,10 @@ function getData(sheetName: string, beginGate: number, gateLength: number): Pena
     return data;
 }
 
-function putData(sheetName: string, sheetData: Penalties.SheetData) {
+function putData(sheetName: string, sheetData: Penalties.SheetData): Penalties.SheetData {
     Logger.log(`sheetName:${sheetName}`);
     Logger.log(sheetData);
-    Penalties.putSheetData(sheetName, sheetData);
+    const saved = Penalties.putSheetData(sheetName, sheetData);
+    Logger.log(saved);
+    return saved;
 }

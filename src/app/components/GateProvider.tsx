@@ -18,11 +18,12 @@ const GateContext = createContext<GateContextType>({
 });
 
 export const useGates = () => useContext(GateContext);
-export default function GateProvider({ children }) {
-    const p = JSON.parse('{"sheetName": "<?= sheetName ?>", "beginGate": <?= beginGate ?>, "gateLength": <?= gateLength ?>}');
+export default function GateProvider({ children, queryParameter }) {
+    //const p = JSON.parse('{"sheetName": "<?= sheetName ?>", "beginGate": <?= beginGate ?>, "gateLength": <?= gateLength ?>}');
+    const p = JSON.parse(queryParameter);
     const sheetName = p.sheetName;
-    const beginGate = p.beginGate;
-    const gateLength = p.gateLength;
+    const beginGate = Number(p.beginGate);
+    const gateLength = Number(p.gateLength);
     const { loading, error, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);
     const setPenalty = (race: string, bib: number, gateNumber: number, penalty: string) => {
         const updateSectionGatePenalty = (section: Sheetdata.section) => {

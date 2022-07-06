@@ -1,17 +1,18 @@
 namespace Penalties {
 
   export interface gate {
-    gateNumber: number;
+    gateNumber: number;     // <<PK>> ゲート番号
     penalty: string;        // ジャッジ: スプレッドシートの4列目(1)～33列目(30)
     isLocked: boolean;      // ロック済: スプレッドシートの3列目
+    savedPenalty: string;   // 保存済みのジャッジ
   };
 
   export interface section {
+    sheetRowIndex: number;  // <<PK>> スプレッドシートの行インデックス番号（0: 2行目, 1:3行目, ... 99: 101行目）
     race: string;           // レース名: スプレッドシートの1列目
     bib: number;            // ゼッケン: スプレッドシートの2列目
     isLocked: boolean;      // ロック済: スプレッドシートの3列目
     gates: gate[];          // 
-    sheetRowIndex: number;  // スプレッドシートの行インデックス番号（0: 2行目, 1:3行目, ... 99: 101行目）
   }
 
   export interface SheetData {
@@ -24,36 +25,40 @@ namespace Penalties {
       throw new Error(`Missing sheet: '${sheetName}'`);
     }
     const sections: section[] = [];
-    const lastRow = sheet.getLastRow();
-    if ((lastRow > 1) && (beginGate > 0) && (gateLength > 0) && ((beginGate + gateLength - 1) < 100)) {
-      const rsRunners = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
-      const rsGates = sheet.getRange(2, 3 + beginGate, lastRow - 1, gateLength).getValues();
-      rsRunners.forEach((runner, sheetRowIndex) => {
-        const race: string = runner[0];
-        const bib: number = Number(runner[1]);
-        const isLocked = (runner[2] == '!')
-        const gates: gate[] = [];
-        rsGates[sheetRowIndex].forEach((penalty, gateIndex) => {
-          const gate: gate = {
-            gateNumber: beginGate + gateIndex,
-            penalty,
-            isLocked
-          }
-          gates.push(gate);
-        });
-        const section: section = {
-          race,
-          bib,
-          isLocked,
-          gates,
-          sheetRowIndex,
-        }
-        sections.push(section);
-      });
+    const sheetData: SheetData = { sections, };
+    if ((beginGate < 1) || (gateLength < 1) || ((beginGate + gateLength - 1) > 99)) {
+      return sheetData;
     }
-    return {
-      sections,
-    };
+    const rowCount = sheet.getLastRow() - 1;
+    if (rowCount < 1) {
+      return sheetData;
+    }
+    const rsRunners = sheet.getRange(2, 1, rowCount, 3).getValues();
+    const rsGates = sheet.getRange(2, 3 + beginGate, rowCount, gateLength).getValues();
+    rsRunners.forEach((runner, sheetRowIndex) => {
+      const race: string = runner[0];
+      const bib: number = Number(runner[1]);
+      const isLocked = (runner[2] == '!')
+      const gates: gate[] = [];
+      rsGates[sheetRowIndex].forEach((penalty, gateIndex) => {
+        const gate: gate = {
+          gateNumber: beginGate + gateIndex,
+          penalty,
+          isLocked,
+          savedPenalty: penalty,
+        }
+        gates.push(gate);
+      });
+      const section: section = {
+        race,
+        bib,
+        isLocked,
+        gates,
+        sheetRowIndex,
+      }
+      sections.push(section);
+    });
+    return sheetData;
   };
 
   export function putSheetData(sheetName: string, sheetData: SheetData): SheetData {
@@ -73,10 +78,12 @@ namespace Penalties {
           section.gates.forEach(gate => {
             gate.isLocked = true;
             gate.penalty = sheet.getRange(row, gate.gateNumber + 3).getValue();
+            gate.savedPenalty = gate.penalty;
           });
         } else {
           section.gates.forEach(gate => {
             sheet.getRange(row, gate.gateNumber + 3).setValue(gate.penalty);
+            gate.savedPenalty = gate.penalty;
           });
         }
       } else {
