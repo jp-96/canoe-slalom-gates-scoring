@@ -4,10 +4,10 @@ import Sheetdata from "../../api/penaltydata";
 import { GASClient } from 'gas-client';
 const { serverFunctions } = new GASClient();
 
-const useGetSheetData = (sheetName: string, beginGate: number, gateLength: number): { loading: boolean, error: any, sections: Sheetdata.section[], setSections: React.Dispatch<React.SetStateAction<Sheetdata.section[]>> } => {
+const useGetSheetData = (sheetName: string, beginGate: number, gateLength: number)　=> {
     const emptySections: Sheetdata.section[] = [];
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState();
+    const [loading, setLoading] = useState(true);
     const [sections, setSections] = useState(emptySections);
 
     useEffect(() => {
@@ -18,16 +18,20 @@ const useGetSheetData = (sheetName: string, beginGate: number, gateLength: numbe
     }, []);
 
     return {
-        loading, error, sections, setSections,
+        error, loading, sections, setSections,
     }
 }
 
 type GateContextType = {
+    error?: any;
+    loading: boolean;
     sections: Sheetdata.section[];
     setPenalty: (race: string, bib: number, gateNumber: number, newPenalty: string) => void;
 };
 
 const GateContext = createContext<GateContextType>({
+    error: new Error('GateProvider is Nothing'),
+    loading: false,
     sections: [],
     setPenalty: (race, bib, gateNumber, newPenalty) => undefined,
 });
@@ -38,7 +42,7 @@ export default function GateProvider({ children }) {
     const sheetName = appConfig.sheetName;
     const beginGate = appConfig.beginGate;
     const gateLength = appConfig.gateLength;
-    const { loading, error, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);
+    const { error, loading, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);
     const setPenalty = (race: string, bib: number, gateNumber: number, penalty: string) => {
         const updateSectionGatePenalty = (section: Sheetdata.section) => {
             const gates = section.gates.map(gate =>
@@ -95,23 +99,8 @@ export default function GateProvider({ children }) {
 
     };
 
-    if (error) {
-        return (
-            <>
-                <h1>Error</h1>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
-            </>
-        );
-    }
-
-    if (loading) {
-        return (
-            <h1>Loading...</h1>
-        );
-    }
-
     return (
-        <GateContext.Provider value={{ sections, setPenalty }}>
+        <GateContext.Provider value={{ error, loading, sections, setPenalty }}>
             {children}
         </GateContext.Provider>
     );

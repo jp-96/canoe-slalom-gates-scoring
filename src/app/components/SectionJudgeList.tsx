@@ -3,9 +3,26 @@ import GateJudge from "./GateJudge";
 import { useGates } from "../providers/GateProvider";
 
 function SectionJudgeList() {
-    const { sections } = useGates();
+    const { error, loading, sections } = useGates();
 
-    if (!sections.length) return <div>No start list.</div>;
+    if (error) {
+        return (
+            <>
+                <h1>Error</h1>
+                <pre>{JSON.stringify(error, null, 2)}</pre>
+            </>
+        );
+    }
+
+    if (loading) {
+        return (
+            <h1>L o a d i n g ...</h1>
+        );
+    }
+
+    if (!sections.length) {
+        return <div>No start list.</div>;
+    }
 
     return (
         <div>

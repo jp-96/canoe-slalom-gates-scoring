@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useGates } from "../providers/GateProvider";
 
 function GateJudge({ race, bib, gateNumber, penalty, savedPenalty, isLocked = false }) {
-    //const [penalty, setPenalty] = useState(defaultPenalty);
     const { setPenalty } = useGates();
     const isSaved = penalty == savedPenalty;
     const onGateJudge = newPenalty => {
@@ -19,7 +18,6 @@ function GateJudge({ race, bib, gateNumber, penalty, savedPenalty, isLocked = fa
             <span className={'gate-penalty-dnf ' + (penalty == 'DNF' ? 'gate-penalty-selected' : 'gate-penalty-unselected')} onClick={() => onGateJudge('DNF')} >DNF</span>
         </div>
     );
-
 }
 
 export default GateJudge;
