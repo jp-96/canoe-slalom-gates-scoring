@@ -1,20 +1,15 @@
-import { renderIntoDocument } from "react-dom/test-utils";
-import { AppConfig } from "./api/AppConfig";
+import AppConfig from "./api/AppConfig";
 import Penalties from "./api/penaltydata";
 
 function doGet(e: GoogleAppsScript.Events.DoGet) {
     Logger.log(e);
     const p = e.parameter;
-    if (p.sheetName != "テストデータ") {
+    const appConfig = AppConfig.buildAppConfig(p.sheetName, p.beginGate, p.gateLength);
+    if (appConfig.sheetName != "テストデータ") {
         return;
     }
-    const appConfig:AppConfig = {
-        sheetName: p.sheetName,
-        beginGate: Number(p.beginGate),
-        gateLength: Number(p.gateLength),
-    }
     const template = HtmlService.createTemplateFromFile("index");
-    template.appConfigString = JSON.stringify(appConfig);
+    template.appConfigString = AppConfig.stringifyAppConfig(appConfig);
     return template
         .evaluate()
         .addMetaTag("viewport", "width=device-width, initial-scale=1.0")

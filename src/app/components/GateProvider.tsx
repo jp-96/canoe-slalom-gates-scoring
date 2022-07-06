@@ -1,11 +1,9 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useContext } from "react";
 //import colorData from "./color-data.json";
-import { v4 } from "uuid";
+import { useAppConfig } from "../providers/AppConfigProvider";
 import Sheetdata from "../../api/penaltydata";
 import { useGetSheetData } from '../hooks';
 import { GASClient } from 'gas-client';
-import Penalties from "../../api/penaltydata";
-import { AppConfig } from "../../api/AppConfig";
 const { serverFunctions } = new GASClient();
 
 type GateContextType = {
@@ -19,8 +17,8 @@ const GateContext = createContext<GateContextType>({
 });
 
 export const useGates = () => useContext(GateContext);
-export default function GateProvider({ children, appConfigString }) {
-    const appConfig:AppConfig = JSON.parse(appConfigString);
+export default function GateProvider({ children }) {
+    const { appConfig } = useAppConfig();
     const sheetName = appConfig.sheetName;
     const beginGate = appConfig.beginGate;
     const gateLength = appConfig.gateLength;
