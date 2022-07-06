@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useGates } from "./GateProvider";
+import { useGates } from "../providers/GateProvider";
 
 function GateJudge({ race, bib, gateNumber, penalty, savedPenalty, isLocked = false }) {
     //const [penalty, setPenalty] = useState(defaultPenalty);

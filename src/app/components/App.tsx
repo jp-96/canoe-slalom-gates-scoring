@@ -1,8 +1,7 @@
 import React from 'react';
 import Logo from './Logo';
 //import './App.css'; // ==> ../index.html
-import SectionJudgeList from './components/SectionJudgeList';
-import GateJudge from './components/GateJudge';
+import SectionJudgeList from './SectionJudgeList';
 
 function App() {
   return (

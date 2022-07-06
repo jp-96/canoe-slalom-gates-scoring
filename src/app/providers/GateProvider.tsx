@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from "react";
 //import colorData from "./color-data.json";
-import { useAppConfig } from "../providers/AppConfigProvider";
+import { useAppConfig } from "./AppConfigProvider";
 import Sheetdata from "../../api/penaltydata";
 import { useGetSheetData } from '../hooks';
 import { GASClient } from 'gas-client';

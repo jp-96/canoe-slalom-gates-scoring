@@ -1,6 +1,6 @@
 import React from "react";
 import GateJudge from "./GateJudge";
-import { useGates } from "./GateProvider";
+import { useGates } from "../providers/GateProvider";
 
 function SectionJudgeList() {
     const { sections } = useGates();
