@@ -1,15 +1,17 @@
 import React from 'react';
 import Logo from './Logo';
+import GateProvider from '../providers/GateProvider';
+import SectionJudgeList from './SectionJudgeList';
 //import './App.css'; // ==> ../index.html
-import SectionJudgeList from './components/SectionJudgeList';
-import GateJudge from './components/GateJudge';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
         <Logo className="App-logo" />
-        <SectionJudgeList />
+        <GateProvider>
+          <SectionJudgeList />
+        </GateProvider>
         <p>
           Edit <code>src/app/App.tsx</code> and save to reload.
         </p>

@@ -1,16 +1,15 @@
-import { renderIntoDocument } from "react-dom/test-utils";
+import AppConfig from "./api/AppConfig";
 import Penalties from "./api/penaltydata";
 
 function doGet(e: GoogleAppsScript.Events.DoGet) {
     Logger.log(e);
     const p = e.parameter;
-    if (p.sheetName != "テストデータ") {
+    const appConfig = AppConfig.buildAppConfig(p.sheetName, p.beginGate, p.gateLength);
+    if (appConfig.sheetName != "テストデータ") {
         return;
     }
     const template = HtmlService.createTemplateFromFile("index");
-    template.sheetName = p.sheetName;
-    template.beginGate = p.beginGate;
-    template.gateLength = p.gateLength;
+    template.appConfigString = AppConfig.stringifyAppConfig(appConfig);
     return template
         .evaluate()
         .addMetaTag("viewport", "width=device-width, initial-scale=1.0")
@@ -24,8 +23,10 @@ function getData(sheetName: string, beginGate: number, gateLength: number): Pena
     return data;
 }
 
-function putData(sheetName: string, sheetData: Penalties.SheetData) {
+function putData(sheetName: string, sheetData: Penalties.SheetData): Penalties.SheetData {
     Logger.log(`sheetName:${sheetName}`);
     Logger.log(sheetData);
-    Penalties.putSheetData(sheetName, sheetData);
+    const saved = Penalties.putSheetData(sheetName, sheetData);
+    Logger.log(saved);
+    return saved;
 }
