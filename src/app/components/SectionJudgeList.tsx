@@ -13,7 +13,7 @@ function SectionJudgeList() {
                 <>
                     <h1>[{section.bib}] {section.race}</h1>
                     {section.gates.map(gate => (
-                        <GateJudge race={section.race} bib={section.bib} gateNumber={gate.gateNumber} penalty={gate.penalty} isLocked={gate.isLocked} />
+                        <GateJudge race={section.race} bib={section.bib} gateNumber={gate.gateNumber} penalty={gate.penalty} savedPenalty={gate.savedPenalty} isLocked={gate.isLocked} />
                     ))}
                 </>
             ))}

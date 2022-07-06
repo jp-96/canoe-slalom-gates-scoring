@@ -37,11 +37,10 @@ export default function GateProvider({ children, queryParameter }) {
         const modified = sections.map(section =>
             (section.race === race) && (section.bib === bib)
                 ? updateSectionGatePenalty(section)
-                : section)
-        setSections(
-            modified
+                : section
         );
-        
+        setSections(modified);
+
         const newSections = modified.filter(section => (section.race === race) && (section.bib === bib));
         if (newSections.length === 1) {
             const section = newSections[0];
@@ -51,10 +50,35 @@ export default function GateProvider({ children, queryParameter }) {
                 const sheetData = {
                     sections: [{ ...section, gates: [{ ...gate }] }],
                 }
-                serverFunctions.putData(sheetName, sheetData);
+                serverFunctions.putData(sheetName, sheetData)
+                    .then((saved: Sheetdata.SheetData) => {
+                        setSections(sections => {
+                            const savedSection = saved.sections[0];
+                            const race = savedSection.race;
+                            const bib = savedSection.bib;
+                            const gate = savedSection.gates[0];
+                            const gateNumber = gate.gateNumber;
+                            const savedPenalty = gate.savedPenalty;
+                            const isLocked = gate.isLocked;
+                            const updateSectionGatePenalty = (section: Sheetdata.section) => {
+                                const gates = section.gates.map(gate =>
+                                    gate.gateNumber === gateNumber
+                                        ? { ...gate, penalty: savedPenalty, savedPenalty, isLocked }
+                                        : gate
+                                );
+                                return { ...section, gates };
+                            };
+                            const modified = sections.map(section =>
+                                (section.race === race) && (section.bib === bib)
+                                    ? updateSectionGatePenalty(section)
+                                    : section
+                            );
+                            return modified;
+                        });
+                    });
             }
         }
-        
+
     };
 
     if (error) {

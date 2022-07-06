@@ -44,6 +44,12 @@
     color: black;
 }
 
+.gate-color-gray {
+    border-color: white;
+    background-color: gray;
+    color: black;
+}
+
 .gate-penalty-0,
 .gate-penalty-2,
 .gate-penalty-50,
