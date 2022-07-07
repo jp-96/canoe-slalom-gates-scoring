@@ -50,6 +50,12 @@
     color: black;
 }
 
+.gate-color-error {
+    border-color: green;
+    background-color: red;
+    color: black;
+}
+
 .gate-penalty-0,
 .gate-penalty-2,
 .gate-penalty-50,

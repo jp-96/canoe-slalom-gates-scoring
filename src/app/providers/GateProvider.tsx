@@ -44,11 +44,11 @@ export default function GateProvider({ children }) {
     const beginGate = parameter.beginGate;
     const gateLength = parameter.gateLength;
     const { error, loading, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);
-    const setPenalty = (race: string, bib: number, gateNumber: number, penalty: string) => {
+    const setPenalty = (race: string, bib: number, gateNumber: number, newPenalty: string) => {
         const updateSectionGatePenalty = (section: Sheetdata.section) => {
             const gates = section.gates.map(gate =>
                 gate.gateNumber === gateNumber
-                    ? { ...gate, penalty }
+                    ? { ...gate, penalty: newPenalty, fetchStatus: { isLoading: true } }
                     : gate
             );
             return { ...section, gates };
@@ -67,22 +67,36 @@ export default function GateProvider({ children }) {
             if (gates.length === 1) {
                 const gate = gates[0];
                 const sheetData = {
+                    sheetName,
                     sections: [{ ...section, gates: [{ ...gate }] }],
                 }
-                serverFunctions.putData(sheetName, sheetData)
+                serverFunctions.putData(sheetData)
                     .then((saved: Sheetdata.SheetData) => {
                         setSections(sections => {
                             const savedSection = saved.sections[0];
-                            const race = savedSection.race;
-                            const bib = savedSection.bib;
-                            const gate = savedSection.gates[0];
-                            const gateNumber = gate.gateNumber;
-                            const savedPenalty = gate.savedPenalty;
-                            const isLocked = gate.isLocked;
+                            const savedGate = savedSection.gates[0];
                             const updateSectionGatePenalty = (section: Sheetdata.section) => {
                                 const gates = section.gates.map(gate =>
                                     gate.gateNumber === gateNumber
-                                        ? { ...gate, penalty: savedPenalty, savedPenalty, isLocked }
+                                        ? { ...gate, penalty: savedGate.penalty, isLocked: savedGate.isLocked, fetchStatus: {} }
+                                        : gate
+                                );
+                                return { ...section, gates };
+                            };
+                            const modified = sections.map(section =>
+                                (section.race === race) && (section.bib === bib)
+                                    ? updateSectionGatePenalty(section)
+                                    : section
+                            );
+                            return modified;
+                        });
+                    })
+                    .catch(e => {
+                        setSections(sections => {
+                            const updateSectionGatePenalty = (section: Sheetdata.section) => {
+                                const gates = section.gates.map(gate =>
+                                    gate.gateNumber === gateNumber
+                                        ? { ...gate, fetchStatus: { isError: true } }
                                         : gate
                                 );
                                 return { ...section, gates };

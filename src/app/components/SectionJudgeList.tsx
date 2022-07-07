@@ -30,7 +30,7 @@ function SectionJudgeList() {
                 <>
                     <h1>[{section.bib}] {section.race}</h1>
                     {section.gates.map(gate => (
-                        <GateJudge race={section.race} bib={section.bib} gateNumber={gate.gateNumber} penalty={gate.penalty} savedPenalty={gate.savedPenalty} isLocked={gate.isLocked} />
+                        <GateJudge key={`${section.sheetRowIndex}-${gate.gateNumber}`} race={section.race} bib={section.bib} gateNumber={gate.gateNumber} penalty={gate.penalty} isError={gate.fetchStatus.isError} isLoading={gate.fetchStatus.isLoading} isLocked={gate.isLocked} />
                     ))}
                 </>
             ))}

@@ -1,23 +1,31 @@
 namespace Penalties {
 
+  export interface fetchStatus {
+    isError?: boolean;
+    isLoading?: boolean;
+  }
+
   export interface gate {
-    gateNumber: number;     // <<PK>> ゲート番号
-    penalty: string;        // ジャッジ: スプレッドシートの4列目(1)～33列目(30)
-    isLocked: boolean;      // ロック済: スプレッドシートの3列目
-    savedPenalty: string;   // 保存済みのジャッジ
+    gateNumber: number;       // <<PK>> ゲート番号
+    penalty: string;          // ジャッジ: スプレッドシートの4列目(1)～102列目(99)
+    isLocked: boolean;        // ロック済: スプレッドシートの3列目
+    fetchStatus: fetchStatus; // スプレッドシート反映状態
   };
+
+  export type gates = gate[];
 
   export interface section {
     sheetRowIndex: number;  // <<PK>> スプレッドシートの行インデックス番号（0: 2行目, 1:3行目, ... 99: 101行目）
     race: string;           // レース名: スプレッドシートの1列目
     bib: number;            // ゼッケン: スプレッドシートの2列目
     isLocked: boolean;      // ロック済: スプレッドシートの3列目
-    gates: gate[];          // 
+    gates: gates;          // 
   }
 
   export type sections = section[];
 
   export interface SheetData {
+    sheetName: string;
     sections: sections;
   }
 
@@ -27,7 +35,7 @@ namespace Penalties {
       throw new Error(`Missing sheet: '${sheetName}'`);
     }
     const sections: section[] = [];
-    const sheetData: SheetData = { sections, };
+    const sheetData: SheetData = { sheetName, sections, };
     if ((beginGate < 1) || (gateLength < 1) || ((beginGate + gateLength - 1) > 99)) {
       return sheetData;
     }
@@ -47,7 +55,7 @@ namespace Penalties {
           gateNumber: beginGate + gateIndex,
           penalty,
           isLocked,
-          savedPenalty: penalty,
+          fetchStatus: {},
         }
         gates.push(gate);
       });
@@ -61,39 +69,53 @@ namespace Penalties {
       sections.push(section);
     });
     return sheetData;
-  };
+  }
 
-  export function putSheetData(sheetName: string, sheetData: SheetData): SheetData {
+  export function putSingleData(newSingleData: SheetData): SheetData {
+    const sheetName = newSingleData.sheetName;
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
     if (!sheet) {
       throw new Error(`Missing sheet: '${sheetName}'`);
     }
-    sheetData.sections.forEach(section => {
-      const row = section.sheetRowIndex + 2;
-      const runner = sheet.getRange(row, 1, 1, 3).getValues()[0];
-      const race: string = runner[0];
-      const bib: number = Number(runner[1]);
-      const isLocked = (runner[2] == '!')
-      if ((section.race == race) && (section.bib == bib)) {
-        if (isLocked) {
-          section.isLocked = true;
-          section.gates.forEach(gate => {
-            gate.isLocked = true;
-            gate.penalty = sheet.getRange(row, gate.gateNumber + 3).getValue();
-            gate.savedPenalty = gate.penalty;
-          });
-        } else {
-          section.gates.forEach(gate => {
-            sheet.getRange(row, gate.gateNumber + 3).setValue(gate.penalty);
-            gate.savedPenalty = gate.penalty;
-          });
-        }
-      } else {
-        throw new Error(`Missing runner: '${sheetName}' ${section.race}/${section.bib}`);
-      }
-    });
-    return sheetData;
-  };
+    const section = newSingleData.sections[0];
+    const sheetRowIndex = section.sheetRowIndex
+    const race = section.race;
+    const bib = section.bib;
+    const row = sheetRowIndex + 2;
+    const runner = sheet.getRange(row, 1, 1, 3).getValues()[0];
+    const isLocked = (runner[2] == '!');
+    if ((runner[0] != race) || (Number(runner[1] != bib))) {
+      throw new Error(`Missing runner: '${sheetName}' (${sheetRowIndex})`);
+    }
+    const gate = section.gates[0];
+    const gateNumber = gate.gateNumber;
+    if ((gateNumber < 1) || (gateNumber > 99)) {
+      throw new Error('Invalid gateNumber: ${gateNumber}');
+    }
+    let penalty = gate.penalty;
+    const penaltyRange = sheet.getRange(row, gateNumber + 3)
+    if (isLocked) {
+      penalty = penaltyRange.getValue();
+    } else {
+      penaltyRange.setValue(penalty);
+    }
+    const singleData: SheetData = {
+      sheetName,
+      sections: [{
+        sheetRowIndex,
+        race,
+        bib,
+        isLocked,
+        gates: [{
+          gateNumber,
+          penalty,
+          isLocked,
+          fetchStatus: {},
+        }],
+      }],
+    }
+    return singleData;
+  }
 
 }
 

@@ -23,10 +23,11 @@ function getData(sheetName: string, beginGate: number, gateLength: number): Pena
     return data;
 }
 
-function putData(sheetName: string, sheetData: Penalties.SheetData): Penalties.SheetData {
-    Logger.log(`sheetName:${sheetName}`);
+function putData(sheetData: Penalties.SheetData): Penalties.SheetData {
+    Logger.log(`sheetName:${sheetData.sheetName}`);
     Logger.log(sheetData);
-    const saved = Penalties.putSheetData(sheetName, sheetData);
+    //const saved = Penalties.putSheetData(sheetData);
+    const saved = Penalties.putSingleData(sheetData);
     Logger.log(saved);
     return saved;
 }

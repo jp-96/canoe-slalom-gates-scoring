@@ -11,12 +11,20 @@ function testGetSheetData() {
 }
 
 function testPutSheetData() {
-    let sheetData = Penalties.getSheetData('テストデータ', 3, 4);
-    sheetData.sections.forEach(section => {
-        section.gates[0].penalty = '0';
-        section.gates[1].penalty = '2';
-        section.gates[2].penalty = '50';
-        section.gates[3].penalty = 'DNF';
-    });
-    Penalties.putSheetData('テストデータ', sheetData);
+    const sheetData = Penalties.getSheetData('テストデータ', 3, 4);
+
+    const targetSection = sheetData.sections[1];    // 2番目
+    const targetGate = targetSection.gates[2];      // 3番目：ゲート5
+    const singleSheetData: Penalties.SheetData = {
+        sheetName: sheetData.sheetName,
+        sections: [{
+            ...targetSection,
+            gates: [{
+                ...targetGate,
+                penalty: '2',
+            }]
+        }],
+    };
+
+    Penalties.putSingleData(singleSheetData);
 }
