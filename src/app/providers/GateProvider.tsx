@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useAppConfig } from "./AppConfigProvider";
-import Sheetdata from "../../api/penaltydata";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useParameter } from './HtmlTemplateParameterProvider';
+import AppConfig from '../../api/AppConfig';
+import Sheetdata from '../../api/penaltydata';
 import { GASClient } from 'gas-client';
 const { serverFunctions } = new GASClient();
 
-const useGetSheetData = (sheetName: string, beginGate: number, gateLength: number)　=> {
+const useGetSheetData = (sheetName: string, beginGate: number, gateLength: number) => {
     const emptySections: Sheetdata.section[] = [];
     const [error, setError] = useState();
     const [loading, setLoading] = useState(true);
@@ -30,7 +31,7 @@ type GateContextType = {
 };
 
 const GateContext = createContext<GateContextType>({
-    error: {name: 'GateContext.Provider is nothing.',},
+    error: { name: 'GateContext.Provider is nothing.', },
     loading: false,
     sections: [],
     setPenalty: (race, bib, gateNumber, newPenalty) => undefined,
@@ -38,10 +39,10 @@ const GateContext = createContext<GateContextType>({
 
 export const useGates = () => useContext(GateContext);
 export default function GateProvider({ children }) {
-    const { appConfig } = useAppConfig();
-    const sheetName = appConfig.sheetName;
-    const beginGate = appConfig.beginGate;
-    const gateLength = appConfig.gateLength;
+    const { parameter } = useParameter(AppConfig.defaultValue);
+    const sheetName = parameter.sheetName;
+    const beginGate = parameter.beginGate;
+    const gateLength = parameter.gateLength;
     const { error, loading, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);
     const setPenalty = (race: string, bib: number, gateNumber: number, penalty: string) => {
         const updateSectionGatePenalty = (section: Sheetdata.section) => {
