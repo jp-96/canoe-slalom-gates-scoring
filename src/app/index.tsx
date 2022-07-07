@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 //import './index.css'; // ==> ../index.html
-import AppConfigProvider from './providers/AppConfigProvider';
+import HtmlTemplateParameterProvider from './providers/HtmlTemplateParameterProvider';
 import App from './components/App';
 
 const root = ReactDOM.createRoot(
@@ -9,8 +9,8 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <AppConfigProvider appConfigString={"<?= appConfigString ?>"}>
+    <HtmlTemplateParameterProvider>
       <App />
-    </AppConfigProvider>
+    </HtmlTemplateParameterProvider>
   </React.StrictMode>
 );

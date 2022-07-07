@@ -6,20 +6,18 @@ namespace AppConfig {
         gateLength: number;
     }
 
-    export function buildAppConfig(sheetName, beginGate, gateLength): AppConfig {
+    export const defaultValue: AppConfig = {
+        sheetName: '',
+        beginGate: 0,
+        gateLength: -1,
+    };
+
+    export function buildAppConfig(sheetName: any, beginGate: any, gateLength: any): AppConfig {
         return {
             sheetName: String(sheetName),
             beginGate: Number(beginGate),
             gateLength: Number(gateLength),
         }
-    }
-
-    export function stringifyAppConfig(appConfig: AppConfig): string {
-        return JSON.stringify(appConfig);
-    }
-
-    export function parseAppConfigString(appConfigString: string): AppConfig {
-        return JSON.parse(appConfigString);
     }
 
 }
