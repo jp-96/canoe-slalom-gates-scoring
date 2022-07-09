@@ -66,32 +66,42 @@ function test_PutDataSingle_CanoeSlalomHeatService() {
     }
     const dataset = CanoeSlalomHeatService.getDataset(criteria);
 
+    let run: CanoeSlalomHeatData.run;
     let runner: CanoeSlalomHeatData.runner;
     let gate: CanoeSlalomHeatData.gate;
 
     let modGate: CanoeSlalomHeatData.gate;
     let modRunner: CanoeSlalomHeatData.runner;
+    let modRun: CanoeSlalomHeatData.run;
     let modDataset: CanoeSlalomHeatData.Dataset;
+
     let result: CanoeSlalomHeatData.Dataset;
 
-    runner = dataset.runners[0];
-    if (runner.gates) {
-        gate = runner.gates[29];
+    run = dataset.runs[0];
+    runner = run.runner;
+    if (run.gates) {
+        gate = run.gates[29];
 
         modGate = {
             num: gate.num,
             judge: '0',
             fetching: {},
         }
+
         modRunner = {
             row: runner.row,
             bib: runner.bib,
             heat: runner.heat,
-            gates: [modGate,],
         }
+
+        modRun = {
+            runner: modRunner,
+            gates: [modGate,],
+        };
+
         modDataset = {
             sheetName: dataset.sheetName,
-            runners: [modRunner],
+            runs: [modRun,],
         };
         result = CanoeSlalomHeatService.putDataSingle(modDataset);
         Logger.log(result);

@@ -11,10 +11,12 @@
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
     "gas-client": "^1.0.0",
+    "immer": "^9.0.15",
     "parcel": "^2.6.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
+    "use-immer": "^0.7.0",
     "zx": "^6.1.0"
   },
   "scripts": {

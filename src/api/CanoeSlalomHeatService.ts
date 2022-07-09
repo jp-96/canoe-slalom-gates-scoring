@@ -161,7 +161,7 @@ namespace CanoeSlalomHeatService {
         const rowCount = getRowCount(sheet);
         const dataset: CanoeSlalomHeatData.Dataset = {
             sheetName: criteria.sheetName,
-            runners: [],
+            runs: [],
         };
         const rsLocked: boolean[] = []; // isLockedの一時リスト
 
@@ -174,8 +174,11 @@ namespace CanoeSlalomHeatService {
                     bib: String(r[0]),
                     heat: String(r[1]),
                 };
+                const run: CanoeSlalomHeatData.run = {
+                    runner,
+                };
                 rsLocked.push(String(r[2]) != '');  // isLocked
-                dataset.runners.push(runner);
+                dataset.runs.push(run);
             });
         })();
 
@@ -183,21 +186,21 @@ namespace CanoeSlalomHeatService {
             // スタートタイム
             const rs = sheet.getRange(CONSTS.DATA_TOP_ROW, CONSTS.START_COLUMN, rowCount, CONSTS.START_LENGTH).getValues();
             rs.forEach((r, i) => {
-                const runner = dataset.runners[i];
+                const run = dataset.runs[i];
                 const hms = {
                     hours: r[0],
                     minutes: r[1],
                     seconds: r[2],
                 }
                 const seconds = CanoeSlalomHeatData.hmsToSeconds(hms);
-                runner.started = {
+                run.started = {
                     seconds,
                     judge: r[3],
                     fetching: {},
                 };
                 if (rsLocked[i]) {
                     // isLocked
-                    runner.started.isLocked = true;
+                    run.started.isLocked = true;
                 }
             });
         }
@@ -206,21 +209,21 @@ namespace CanoeSlalomHeatService {
             // フィニッシュタイム
             const rs = sheet.getRange(CONSTS.DATA_TOP_ROW, CONSTS.FINISH_COLUMN, rowCount, CONSTS.FINISH_LENGTH).getValues();
             rs.forEach((r, i) => {
-                const runner = dataset.runners[i];
+                const run = dataset.runs[i];
                 const hms = {
                     hours: r[0],
                     minutes: r[1],
                     seconds: r[2],
                 }
                 const seconds = CanoeSlalomHeatData.hmsToSeconds(hms);
-                runner.finished = {
+                run.finished = {
                     seconds,
                     judge: r[3],
                     fetching: {},
                 };
                 if (rsLocked[i]) {
                     // isLocked
-                    runner.finished.isLocked = true;
+                    run.finished.isLocked = true;
                 }
             });
         }
@@ -253,7 +256,7 @@ namespace CanoeSlalomHeatService {
                     }
                     gates.push(gate);
                 });
-                dataset.runners[i].gates = gates;
+                dataset.runs[i].gates = gates;
             });
         }
 
@@ -264,12 +267,14 @@ namespace CanoeSlalomHeatService {
         const sheetName = dataset.sheetName;
         const sheet = getSheet(sheetName);
         const rowCount = getRowCount(sheet);
-        const firstRunner = dataset.runners[0];
+        const firstRun = dataset.runs[0];
+        const firstRunner = firstRun.runner;
         const row = firstRunner.row;
         const sheetRow = CONSTS.DATA_TOP_ROW + row;
         if (row >= rowCount) {
             throw new Error('Invalid row: ${row}');
         }
+        let run: CanoeSlalomHeatData.run;
         let runner: CanoeSlalomHeatData.runner;
         let isFailure = false;
         let isLocked = false;
@@ -288,20 +293,23 @@ namespace CanoeSlalomHeatService {
                 isFailure = true;
                 isLocked = true;
             }
+            run = {
+                runner,
+            };
         })();
-        if (firstRunner.started) {
+        if (firstRun.started) {
             // スタートタイムの更新
 
             throw new Error('ToDo: putDataSingle - スタートタイムの更新');
 
-        } else if (firstRunner.finished) {
+        } else if (firstRun.finished) {
             // フィニッシュタイムの更新
 
             throw new Error('ToDo: putDataSingle - フィニッシュタイムの更新');
 
-        } else if (firstRunner.gates) {
+        } else if (firstRun.gates) {
             // ゲート判定の更新
-            const firstGate = firstRunner.gates[0];
+            const firstGate = firstRun.gates[0];
             const num = firstGate.num;
             const range = sheet.getRange(sheetRow, num + CONSTS.GATE_COLUMN - 1);
             let judge;
@@ -322,7 +330,7 @@ namespace CanoeSlalomHeatService {
             if (isFailure) {
                 gate.fetching = { isFailure };
             }
-            runner.gates = [
+            run.gates = [
                 gate,
             ]
         } else {
@@ -331,7 +339,7 @@ namespace CanoeSlalomHeatService {
         }
         const updated: CanoeSlalomHeatData.Dataset = {
             sheetName,
-            runners: [runner],
+            runs: [run,],
         };
         return updated;
     }

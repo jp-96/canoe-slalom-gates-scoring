@@ -55,6 +55,58 @@ namespace CanoeSlalomHeatData {
     export const JUDGE_DSQ = 'DSQ'
     type judgeDsq = 'DSQ'
 
+    export type Data = {
+        /**
+         * スプレッドシートのシート名
+         */
+        sheetName: string;
+        /**
+         * 単体データの種類
+         */
+        type: 'started' | 'finished' | 'gate' | 'runner';
+        /**
+         * 単体データ
+         */
+        data: data
+    };
+    
+    type data = startedData | finishedData | gateData | runnerData;
+
+    /**
+     * スタートタイム単体データ
+     */
+    export type startedData = {
+        started: startedTime;
+    } & runnerData;
+
+    /**
+     * フィニッシュタイム単体データ
+     */
+    export type finishedData = {
+        finished: finishedTime;
+    } & runnerData;
+
+    /**
+     * ゲート判定単体データ
+     */
+    export type gateData = {
+        gate: gate;
+    } & runnerData;
+
+    /**
+     * 選手単体データ（ベース）
+     */
+    export type runnerData = {
+        /**
+         * 選手データ
+         */
+        runner: runner;
+        /**
+         * システム項目
+         */
+        system: system;
+    }
+
     /**
      * 選手・タイム・ペナルティのデータセット
      */
@@ -64,13 +116,35 @@ namespace CanoeSlalomHeatData {
          */
         sheetName: string;
         /**
-         * 選手・タイム・ペナルティのレコードセット(要素数:1以上)
+         * 選手・タイム・ペナルティのレコードセット
          */
-        runners: runner[];
+        runs: run[];
     }
 
     /**
-     * 選手のタイムとペナルティのレコード
+     * 選手・タイム・ペナルティ
+     */
+    export type run = {
+        /**
+         * 選手データ
+         */
+        runner: runner,
+        /**
+         * スタートタイム
+         */
+        started?: startedTime;
+        /**
+         * ゴールタイム
+         */
+        finished?: finishedTime;
+        /**
+         * ゲート判定(要素数:1以上)
+         */
+        gates?: gate[];
+    }
+
+    /**
+     * 選手データ
      */
     export type runner = {
         /**
@@ -85,18 +159,6 @@ namespace CanoeSlalomHeatData {
          * レース名
          */
         heat: string;
-        /**
-         * スタートタイム
-         */
-        started?: startedTime;
-        /**
-         * ゴールタイム
-         */
-        finished?: finishedTime;
-        /**
-         * ゲート判定(要素数:1以上)
-         */
-        gates?: gate[];
     }
 
     /**
@@ -171,7 +233,7 @@ namespace CanoeSlalomHeatData {
     /**
      * ゲート判定
      */
-    export type gate = system & {
+    export type gate = {
         /**
          * <<PK>> ゲート番号(1～30)
          */
@@ -180,10 +242,10 @@ namespace CanoeSlalomHeatData {
          * ゲート判定
          */
         judge: judgeNone | judgeP0 | judgeP2 | judgeP50 | judgeDsq;
-    };
+    } & system;
 
     /**
-     * システムメンバー
+     * システム項目
      */
     export type system = {
         /**
