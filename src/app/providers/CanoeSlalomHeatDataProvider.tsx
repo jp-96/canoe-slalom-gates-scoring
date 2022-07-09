@@ -39,6 +39,8 @@ function reducer(draft: CanoeSlalomHeatData.Dataset, action: action) {
         case ACTION_TYPE_LOADED:
             // データセットの取得完了
             // draftへ全てコピー
+            draft.sheetName = action.payload.sheetName;
+            draft.runs = action.payload.runs;
             break;
         case ACTION_TYPE_CHANGED:
             // 変更

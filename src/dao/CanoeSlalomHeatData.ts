@@ -69,7 +69,7 @@ namespace CanoeSlalomHeatData {
          */
         data: data
     };
-    
+
     type data = startedData | finishedData | gateData | runnerData;
 
     /**

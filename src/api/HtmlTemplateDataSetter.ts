@@ -54,7 +54,7 @@ namespace HtmlTemplateDataSetter {
             return container;
         }
 
-        export const defaultValue: DataContainer ={
+        export const defaultValue: DataContainer = {
             data: null,
         }
 

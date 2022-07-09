@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 //import './index.css'; // ==> ../index.html
 import HtmlTemplateDataProvider from './providers/HtmlTemplateDataProvider';
+import CanoeSlalomHeatDataProvider from './providers/CanoeSlalomHeatDataProvider';
 import GateProvider from './providers/GateProvider';
 import App from './App';
 
@@ -11,9 +12,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <HtmlTemplateDataProvider>
-      <GateProvider>
-        <App />
-      </GateProvider>
+      <CanoeSlalomHeatDataProvider>
+        <GateProvider>
+          <App />
+        </GateProvider>
+      </CanoeSlalomHeatDataProvider>
     </HtmlTemplateDataProvider>
   </React.StrictMode>
 );
