@@ -8,7 +8,6 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Logo className="App-logo" />
-        <SectionJudgeList />
         <p>
           Edit <code>src/app/App.tsx</code> and save to reload.
         </p>
@@ -20,6 +19,7 @@ function App() {
         >
           Learn React
         </a>
+        <SectionJudgeList />
       </header>
     </div>
   );

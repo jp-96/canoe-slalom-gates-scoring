@@ -39,8 +39,8 @@ const GateContext = createContext<GateContextType>({
 
 export const useGates = () => useContext(GateContext);
 export default function GateProvider({ children }) {
-    const { data } = useData<AppConfig.AppConfig>({ sheetName: '', beginGate: 0, gateLength: 0 });
-    const sheetName = data.sheetName
+    const { data } = useData<AppConfig.AppConfig>();
+    const sheetName = data.sheetName;
     const beginGate = data.beginGate;
     const gateLength = data.gateLength;
     const { error, loading, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);

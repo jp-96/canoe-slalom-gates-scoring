@@ -1,6 +1,5 @@
 import CanoeSlalomHeatData from "../dao/CanoeSlalomHeatData";
 
-export default CanoeSlalomHeatService;
 namespace CanoeSlalomHeatService {
 
     namespace CONSTS {
@@ -337,3 +336,5 @@ namespace CanoeSlalomHeatService {
         return updated;
     }
 }
+
+export default CanoeSlalomHeatService;

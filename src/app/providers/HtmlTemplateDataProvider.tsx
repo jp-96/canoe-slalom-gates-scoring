@@ -1,25 +1,24 @@
 import React, { createContext, useContext } from 'react';
 import HtmlTemplateDataSetter from '../../api/HtmlTemplateDataSetter';
 
-const HtmlTemplateDataContext = createContext(HtmlTemplateDataSetter.defaultValue);
+const HtmlTemplateDataContext = createContext(HtmlTemplateDataSetter.internal.defaultValue);
 
-export function useData<T>(defaultData: T) {
+export function useData<T = undefined>(defaultData?: T) {
     const { data } = useContext(HtmlTemplateDataContext);
+    if (defaultData) {
+        return {
+            data: data ? data as T : defaultData,
+        };
+    }
     return {
-        data: data ? data as T : defaultData,
-        isDefault: (!data),
+        data: data as T,
     };
 }
 
 export default function HtmlTemplateDataProvider({ children }) {
-    const container = HtmlTemplateDataSetter.defaultValue;
-    try {
-        container.data = JSON.parse(HtmlTemplateDataSetter.htmlTemplateDataString).parameter;
-    } catch (error) {
-        //
-    }
+    const dataContainer = HtmlTemplateDataSetter.internal.getFromData();
     return (
-        <HtmlTemplateDataContext.Provider value={container}>
+        <HtmlTemplateDataContext.Provider value={dataContainer}>
             {children}
         </HtmlTemplateDataContext.Provider>
     );
