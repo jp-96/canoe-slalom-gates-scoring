@@ -193,7 +193,7 @@ namespace CanoeSlalomHeatService {
                 const seconds = CanoeSlalomHeatData.hmsToSeconds(hms);
                 runner.started = {
                     seconds,
-                    judge: String(r[3]),
+                    judge: r[3],
                     fetching: {},
                 };
                 if (rsLocked[i]) {
@@ -216,7 +216,7 @@ namespace CanoeSlalomHeatService {
                 const seconds = CanoeSlalomHeatData.hmsToSeconds(hms);
                 runner.finished = {
                     seconds,
-                    judge: String(r[3]),
+                    judge: r[3],
                     fetching: {},
                 };
                 if (rsLocked[i]) {
@@ -242,7 +242,7 @@ namespace CanoeSlalomHeatService {
                 const gates: CanoeSlalomHeatData.gate[] = [];
                 r.forEach((g, j) => {
                     const num = beginGate + j;
-                    const judge = String(g);
+                    const judge = g;
                     const gate: CanoeSlalomHeatData.gate = {
                         num,
                         judge,

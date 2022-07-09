@@ -29,7 +29,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     }
     dataset = CanoeSlalomHeatService.getDataset(criteria);
     Logger.log(dataset);
-    
+
     dataset = CanoeSlalomHeatService.getDataset(criteria);
     Logger.log(dataset);
     criteria = {
@@ -41,7 +41,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     }
     dataset = CanoeSlalomHeatService.getDataset(criteria);
     Logger.log(dataset);
-  
+
     dataset = CanoeSlalomHeatService.getDataset(criteria);
     Logger.log(dataset);
     criteria = {
@@ -53,7 +53,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     }
     dataset = CanoeSlalomHeatService.getDataset(criteria);
     Logger.log(dataset);
-    
+
 }
 
 function test_PutDataSingle_CanoeSlalomHeatService() {
@@ -66,32 +66,34 @@ function test_PutDataSingle_CanoeSlalomHeatService() {
     }
     const dataset = CanoeSlalomHeatService.getDataset(criteria);
 
-    let runner:CanoeSlalomHeatData.runner;
+    let runner: CanoeSlalomHeatData.runner;
     let gate: CanoeSlalomHeatData.gate;
-    
+
     let modGate: CanoeSlalomHeatData.gate;
-    let modRunner:CanoeSlalomHeatData.runner;
+    let modRunner: CanoeSlalomHeatData.runner;
     let modDataset: CanoeSlalomHeatData.Dataset;
     let result: CanoeSlalomHeatData.Dataset;
-    
+
     runner = dataset.runners[0];
-    gate = runner.gates[29];
-    
-    modGate = {
-        num: gate.num,
-        judge: '0',
-        fetching: {},
+    if (runner.gates) {
+        gate = runner.gates[29];
+
+        modGate = {
+            num: gate.num,
+            judge: '0',
+            fetching: {},
+        }
+        modRunner = {
+            row: runner.row,
+            bib: runner.bib,
+            heat: runner.heat,
+            gates: [modGate,],
+        }
+        modDataset = {
+            sheetName: dataset.sheetName,
+            runners: [modRunner],
+        };
+        result = CanoeSlalomHeatService.putDataSingle(modDataset);
+        Logger.log(result);
     }
-    modRunner = {
-        row: runner.row,
-        bib: runner.bib,
-        heat: runner.heat,
-        gates: [modGate,],
-    }
-    modDataset = {
-        sheetName: dataset.sheetName,
-        runners:[modRunner],
-    };
-    result = CanoeSlalomHeatService.putDataSingle(modDataset);
-    Logger.log(result);
 }

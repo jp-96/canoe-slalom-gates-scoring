@@ -9,14 +9,20 @@ type CanoeSlalomHeatDataContextType = {
 };
 
 const CanoeSlalomHeatDataContext = createContext<CanoeSlalomHeatDataContextType>({
-    dataset: {sheetName: ''},
+    dataset: {
+        sheetName: '',
+        runners: [],
+    },
 });
 
 export const useGates = () => useContext(CanoeSlalomHeatDataContext);
 export default function GateProvider({ children }) {
-    const dataset = {sheetName:''};
+    const dataset ={
+        sheetName: '',
+        runners: [],
+    };
     return (
-        <CanoeSlalomHeatDataContext.Provider value={{dataset}}>
+        <CanoeSlalomHeatDataContext.Provider value={{ dataset }}>
             {children}
         </CanoeSlalomHeatDataContext.Provider>
     );

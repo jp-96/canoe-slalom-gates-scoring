@@ -1,4 +1,4 @@
-import HtmlTemplateParameter from "./api/HtmlTemplateParameter";
+import HtmlTemplateDataSetter from "./api/HtmlTemplateDataSetter";
 import AppConfig from "./api/AppConfig";
 import Penalties from "./api/penaltydata";
 
@@ -9,7 +9,7 @@ function doGet(e: GoogleAppsScript.Events.DoGet) {
     if (appConfig.sheetName != "テストデータ") {
         return;
     }
-    const template = HtmlTemplateParameter.createTemplateFromFile("index", appConfig);
+    const template = HtmlTemplateDataSetter.createTemplateFromFile("index", appConfig);
     return template
         .evaluate()
         .addMetaTag("viewport", "width=device-width, initial-scale=1.0")
