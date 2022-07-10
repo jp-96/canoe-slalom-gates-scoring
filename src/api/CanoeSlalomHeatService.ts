@@ -378,7 +378,7 @@ namespace CanoeSlalomHeatService {
             // スタートタイムの更新
             draftData.started = { ...data.started, ...draftSystem, };
             ((draft: CanoeSlalomHeatData.startedTime) => {
-                
+
                 throw new Error('ToDo: putData - スタートタイムの更新');
 
             })(draftData.started);
@@ -386,7 +386,7 @@ namespace CanoeSlalomHeatService {
             // ゴールタイムの更新
             draftData.finished = { ...data.finished, ...draftSystem, };
             ((draft: CanoeSlalomHeatData.finishedTime) => {
-                
+
                 throw new Error('ToDo: putData - ゴールタイムの更新');
 
             })(draftData.finished);
