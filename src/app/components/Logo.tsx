@@ -1,13 +1,13 @@
 import React, { FC } from 'react'
 
 type Props = {
-  className?: string
+    className?: string
 }
 
 const Logo: FC<Props> = (props: Props) => {
     const optionSvgAtr = {};
-    if (props.className){
-        optionSvgAtr['className']=props.className;
+    if (props.className) {
+        optionSvgAtr['className'] = props.className;
     }
     return (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3" {...optionSvgAtr}>

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useParameter } from './HtmlTemplateParameterProvider';
+import { useData } from './HtmlTemplateDataProvider';
 import AppConfig from '../../api/AppConfig';
 import Sheetdata from '../../api/penaltydata';
 import { GASClient } from 'gas-client';
@@ -39,10 +39,10 @@ const GateContext = createContext<GateContextType>({
 
 export const useGates = () => useContext(GateContext);
 export default function GateProvider({ children }) {
-    const { parameter } = useParameter(AppConfig.defaultValue);
-    const sheetName = parameter.sheetName;
-    const beginGate = parameter.beginGate;
-    const gateLength = parameter.gateLength;
+    const { data } = useData<AppConfig.AppConfig>();
+    const sheetName = data.sheetName;
+    const beginGate = data.beginGate;
+    const gateLength = data.gateLength;
     const { error, loading, sections, setSections } = useGetSheetData(sheetName, beginGate, gateLength);
     const setPenalty = (race: string, bib: number, gateNumber: number, newPenalty: string) => {
         const updateSectionGatePenalty = (section: Sheetdata.section) => {
@@ -70,7 +70,7 @@ export default function GateProvider({ children }) {
                     sheetName,
                     sections: [{ ...section, gates: [{ ...gate }] }],
                 }
-                serverFunctions.putData(sheetData)
+                serverFunctions.putSingleData(sheetData)
                     .then((saved: Sheetdata.SheetData) => {
                         setSections(sections => {
                             const savedSection = saved.sections[0];
