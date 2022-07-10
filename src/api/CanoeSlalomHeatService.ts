@@ -45,10 +45,6 @@ namespace CanoeSlalomHeatService {
          * ゲート判定の開始列
          */
         export const GATE_COLUMN = 12;
-        /**
-         * 最大ゲート番号
-         */
-        export const GATE_MAX = 30;
     }
 
     export function createNewSheet(sheetName: string) {
@@ -85,8 +81,8 @@ namespace CanoeSlalomHeatService {
         ]);
         // ゲート判定
         sheet.getRange(CONSTS.DATA_HEADER_ROW1, CONSTS.GATE_COLUMN).setValue('GATE');
-        sheet.getRange(CONSTS.DATA_HEADER_ROW2, CONSTS.GATE_COLUMN, 1, CONSTS.GATE_MAX).setValues([
-            [...Array(CONSTS.GATE_MAX)].map((_, i) => `[${i + 1}]`)
+        sheet.getRange(CONSTS.DATA_HEADER_ROW2, CONSTS.GATE_COLUMN, 1, CanoeSlalomHeatData.CONSTS.GATE_MAX).setValues([
+            [...Array(CanoeSlalomHeatData.CONSTS.GATE_MAX)].map((_, i) => `[${i + 1}]`)
         ]);
         // スクロール固定
         sheet.setFrozenRows(CONSTS.DATA_HEADER_ROW2);
@@ -232,10 +228,13 @@ namespace CanoeSlalomHeatService {
             // ゲート判定
             const beginGate = criteria.gates.beginGate;
             const gateLength = criteria.gates.gateLength;
-            if ((beginGate < 1)
-                || (gateLength < 1)
-                || ((beginGate + gateLength - 1) > CONSTS.GATE_MAX)
-            ) {
+            try {
+                CanoeSlalomHeatData.validateGateNum(beginGate);
+                if (gateLength < 1) {
+                    throw new Error(`Invalid gateLength: ${gateLength}`);
+                }
+                CanoeSlalomHeatData.validateGateNum(beginGate + gateLength - 1);
+            } catch (error) {
                 throw new Error(`Invalid gates: ${beginGate} (${gateLength})`);
             }
             const column = CONSTS.GATE_COLUMN + beginGate - 1;
@@ -343,6 +342,71 @@ namespace CanoeSlalomHeatService {
         };
         return updated;
     }
+
+    export function putData(data: CanoeSlalomHeatData.Data) {
+        const sheet = getSheet(data.sheetName);
+        const rowCount = getRowCount(sheet);
+        const row = data.runner.row;
+        const sheetRow = CONSTS.DATA_TOP_ROW + row;
+        if (row >= rowCount) {
+            throw new Error('Invalid row: ${row}');
+        }
+        const draftData: CanoeSlalomHeatData.Data = {
+            sheetName: data.sheetName,
+            runner: { ...data.runner },
+        };
+        const draftSystem: CanoeSlalomHeatData.system = { fetching: {} };
+        ((draft: CanoeSlalomHeatData.Data) => {
+            // 選手データの確認（データロック、楽観的ロック）
+            const r = sheet.getRange(sheetRow, CONSTS.RUNNER_COLUMN, 1, CONSTS.RUNNER_LENGTH).getValues()[0];
+            const bib = String(r[0]);
+            const heat = String(r[1]);
+            const isLocked = String(r[2]) != '';
+            if ((draft.runner.bib != bib) || (draft.runner.heat != heat)) {
+                draft.runner.bib = bib;
+                draft.runner.heat = heat;
+                draftSystem.fetching.isFailure = true;
+            }
+            if (isLocked) {
+                draftSystem.isLocked = true;
+                draftSystem.fetching.isFailure = true;
+            }
+        })(draftData);
+        if (data.started) {
+            // スタートタイムの更新
+            draftData.started = { ...data.started, ...draftSystem, };
+            ((draft: CanoeSlalomHeatData.startedTime) => {
+                
+                throw new Error('ToDo: putData - スタートタイムの更新');
+
+            })(draftData.started);
+        } else if (data.finished) {
+            // ゴールタイムの更新
+            draftData.finished = { ...data.finished, ...draftSystem, };
+            ((draft: CanoeSlalomHeatData.finishedTime) => {
+                
+                throw new Error('ToDo: putData - ゴールタイムの更新');
+
+            })(draftData.finished);
+
+        } else if (data.gate) {
+            // ゲート判定の更新
+            draftData.gate = { ...data.gate, ...draftSystem, };
+            ((draft: CanoeSlalomHeatData.gate) => {
+                const num = draft.num;
+                const range = sheet.getRange(sheetRow, num + CONSTS.GATE_COLUMN - 1);
+                if (draft.fetching.isFailure) {
+                    draft.judge = CanoeSlalomHeatData.validateGateJudge(range.getValue());
+                } else {
+                    range.setValue(draft.judge);
+                }
+            })(draftData.gate);
+        } else {
+            throw new Error('Invalid Data object, must have started, finished or gate.');
+        }
+        return draftData;
+    }
+
 }
 
 export default CanoeSlalomHeatService;

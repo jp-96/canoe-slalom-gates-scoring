@@ -1,5 +1,3 @@
-import { ThHTMLAttributes } from "react";
-
 namespace HtmlTemplateDataSetter {
 
     /**

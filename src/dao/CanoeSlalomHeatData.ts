@@ -1,111 +1,95 @@
 export default CanoeSlalomHeatData;
 namespace CanoeSlalomHeatData {
 
-    /**
-     * 判定 - 未
-     */
-    export const JUDGE_NONE = ''
-    type judgeNone = ''
+    export namespace CONSTS {
+
+        /**
+         * 判定 - 未
+         */
+        export const JUDGE_NONE = ''
+        export type judgeNone = ''
+
+        /**
+         * 判定 - 棄権 (スタートタイム) 
+         */
+        export const JUDGE_DNS = 'DNS'
+        export type judgeDns = 'DNS'
+
+        /**
+         * 判定 - スタート済 (スタートタイム) 
+         */
+        export const JUDGE_STARTED = 'STARTED'
+        export type judgeStarted = 'STARTED'
+
+        /**
+         * 判定 - 途中棄権 (ゴールタイム) 
+         */
+        export const JUDGE_DNF = 'DNF'
+        export type judgeDnf = 'DNF'
+
+        /**
+         * 判定 - ゴール済 (ゴールタイム) 
+         */
+        export const JUDGE_FINISHED = 'FINISHED'
+        export type judgeFinished = 'FINISHED'
+
+        /**
+         * 判定 - ペナルティ0（ゲート判定）
+         */
+        export const JUDGE_P0 = '0'
+        export type judgeP0 = '0'
+
+        /**
+         * 判定 - ペナルティ2（ゲート判定）
+         */
+        export const JUDGE_P2 = '2'
+        export type judgeP2 = '2'
+
+        /**
+         * 判定 - ペナルティ50（ゲート判定）
+         */
+        export const JUDGE_P50 = '50'
+        export type judgeP50 = '50'
+
+        /**
+         * 判定 - 失格（スタートタイム/ゲート判定/ゴールタイム）
+         */
+        export const JUDGE_DSQ = 'DSQ'
+        export type judgeDsq = 'DSQ'
+
+        /**
+         * 最大ゲート番号
+         */
+        export const GATE_MAX = 30;
+
+    }
 
     /**
-     * 判定 - 棄権 (スタートタイム) 
+     * 単体データ
+     * (started, finished, gate) の何れか１つのみが必要
      */
-    export const JUDGE_DNS = 'DNS'
-    type judgeDns = 'DNS'
-
-    /**
-     * 判定 - スタート済 (スタートタイム) 
-     */
-    export const JUDGE_STARTED = 'STARTED'
-    type judgeStarted = 'STARTED'
-
-    /**
-     * 判定 - 途中棄権 (ゴールタイム) 
-     */
-    export const JUDGE_DNF = 'DNF'
-    type judgeDnf = 'DNF'
-
-    /**
-     * 判定 - ゴール済 (ゴールタイム) 
-     */
-    export const JUDGE_FINISHED = 'FINISHED'
-    type judgeFinished = 'FINIDHED'
-
-    /**
-     * 判定 - ペナルティ0（ゲート判定）
-     */
-    export const JUDGE_P0 = '0'
-    type judgeP0 = '0'
-
-    /**
-     * 判定 - ペナルティ2（ゲート判定）
-     */
-    export const JUDGE_P2 = '2'
-    type judgeP2 = '2'
-
-    /**
-     * 判定 - ペナルティ50（ゲート判定）
-     */
-    export const JUDGE_P50 = '50'
-    type judgeP50 = '50'
-
-    /**
-     * 判定 - 失格（スタートタイム/ゲート判定/ゴールタイム）
-     */
-    export const JUDGE_DSQ = 'DSQ'
-    type judgeDsq = 'DSQ'
-
     export type Data = {
         /**
          * スプレッドシートのシート名
          */
         sheetName: string;
         /**
-         * 単体データの種類
-         */
-        type: 'started' | 'finished' | 'gate' | 'runner';
-        /**
-         * 単体データ
-         */
-        data: data
-    };
-
-    type data = startedData | finishedData | gateData | runnerData;
-
-    /**
-     * スタートタイム単体データ
-     */
-    export type startedData = {
-        started: startedTime;
-    } & runnerData;
-
-    /**
-     * フィニッシュタイム単体データ
-     */
-    export type finishedData = {
-        finished: finishedTime;
-    } & runnerData;
-
-    /**
-     * ゲート判定単体データ
-     */
-    export type gateData = {
-        gate: gate;
-    } & runnerData;
-
-    /**
-     * 選手単体データ（ベース）
-     */
-    export type runnerData = {
-        /**
          * 選手データ
          */
         runner: runner;
         /**
-         * システム項目
+         * スタートタイム
          */
-        system: system;
-    }
+        started?: startedTime;
+        /**
+         * フィニッシュタイム
+         */
+        finished?: finishedTime;
+        /**
+         * ゲート判定
+         */
+        gate?: gate;
+    };
 
     /**
      * 選手・タイム・ペナルティのデータセット
@@ -164,22 +148,76 @@ namespace CanoeSlalomHeatData {
     /**
      * スタートタイム
      */
-    type startedTime = {
+    export type startedTime = {
         /**
          * スタートタイム判定
          */
-        judge: judgeNone | judgeDns | judgeStarted | judgeDsq;
+        judge: startedTimeJudge;
     } & time
+
+    type startedTimeJudge = CONSTS.judgeNone | CONSTS.judgeDns | CONSTS.judgeStarted | CONSTS.judgeDsq;
+
+    /**
+     * スタートタイム判定の検証と変換
+     * @param value 検証する値
+     * @returns 変換された値（無効な値の場合、例外発生）
+     */
+    export function validateStartedTimeJudge(value: any): startedTimeJudge {
+        switch (value) {
+            case CONSTS.JUDGE_NONE:
+                return CONSTS.JUDGE_NONE;
+                break;
+            case CONSTS.JUDGE_DNS:
+                return CONSTS.JUDGE_DNS;
+                break;
+            case CONSTS.JUDGE_STARTED:
+                return CONSTS.JUDGE_STARTED;
+                break;
+            case CONSTS.JUDGE_DNS:
+                return CONSTS.JUDGE_DNS;
+                break;
+            default:
+                throw new Error(`Invalid StartedTime judge: '${value}'`);
+                break;
+        }
+    }
 
     /**
      * ゴールタイム
      */
-    type finishedTime = {
+    export type finishedTime = {
         /**
          * ゴールタイム判定
          */
-        judge: judgeNone | judgeDnf | judgeFinished | judgeDsq;
+        judge: finishedTime;
     } & time
+
+    type finishedTimeJudge = CONSTS.judgeNone | CONSTS.judgeDnf | CONSTS.judgeFinished | CONSTS.judgeDsq;
+
+    /**
+     * ゴールタイム判定の検証と変換
+     * @param value 検証する値
+     * @returns 変換された値（無効な値の場合、例外発生）
+     */
+    export function validateFinishedTimeJudge(value: any): finishedTimeJudge {
+        switch (value) {
+            case CONSTS.JUDGE_NONE:
+                return CONSTS.JUDGE_NONE;
+                break;
+            case CONSTS.JUDGE_DNF:
+                return CONSTS.JUDGE_DNF;
+                break;
+            case CONSTS.JUDGE_FINISHED:
+                return CONSTS.JUDGE_FINISHED;
+                break;
+            case CONSTS.JUDGE_DSQ:
+                return CONSTS.JUDGE_DSQ;
+                break;
+            default:
+                throw new Error(`Invalid FinishedTime judge: '${value}'`);
+                break;
+        }
+    }
 
     /**
      * スタートタイム・ゴールタイム
@@ -241,8 +279,51 @@ namespace CanoeSlalomHeatData {
         /**
          * ゲート判定
          */
-        judge: judgeNone | judgeP0 | judgeP2 | judgeP50 | judgeDsq;
+        judge: gateJudge;
     } & system;
+
+    type gateJudge = CONSTS.judgeNone | CONSTS.judgeP0 | CONSTS.judgeP2 | CONSTS.judgeP50 | CONSTS.judgeDsq;
+
+    /**
+     * ゲート番号の検証
+     * @param value 検証するゲート番号
+     * @returns 検証済みのゲート番号（無効な場合、例外発生）
+     */
+    export function validateGateNum(value: any): number {
+        const num = Number(value);
+        if ((num < 1) || (num > CONSTS.GATE_MAX)) {
+            throw new Error(`Invalid Gate num: '${value}' [1-${CONSTS.GATE_MAX}]`);
+        }
+        return num;
+    }
+
+    /**
+     * ゲート判定の検証と変換
+     * @param value 検証する値
+     * @returns 変換された値（無効な値の場合、例外発生）
+     */
+    export function validateGateJudge(value: any): gateJudge {
+        switch (String(value)) {
+            case CONSTS.JUDGE_NONE:
+                return CONSTS.JUDGE_NONE;
+                break;
+            case CONSTS.JUDGE_P0:
+                return CONSTS.JUDGE_P0;
+                break;
+            case CONSTS.JUDGE_P2:
+                return CONSTS.JUDGE_P2;
+                break;
+            case CONSTS.JUDGE_P50:
+                return CONSTS.JUDGE_P50;
+                break;
+            case CONSTS.JUDGE_DSQ:
+                return CONSTS.JUDGE_DSQ;
+                break;
+            default:
+                throw new Error(`Invalid Gate judge: '${value}'`);
+                break;
+        }
+    }
 
     /**
      * システム項目
