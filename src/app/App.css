@@ -2,14 +2,19 @@
   text-align: center;
 }
 
-.App-logo {
+.App-logo,
+.App-logo-error {
   height: 40vmin;
   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+    animation: App-logo-spin infinite 5s linear;
+  }
+
+  .App-logo-error {
+    animation: App-logo-error-spin infinite 20s linear;
   }
 }
 
@@ -32,7 +37,18 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes App-logo-error-spin {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
   }
 }

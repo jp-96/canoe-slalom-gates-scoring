@@ -1,15 +1,12 @@
 import React from 'react';
-import Logo from './Logo';
 //import './App.css'; // ==> ../index.html
+import DatasetForm from './components/DatasetForm';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Logo className="App-logo" />
-        <p>
-          Edit <code>src/app/App.tsx</code> and save to reload.
-        </p>
+        <DatasetForm />
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -18,7 +15,6 @@ function App() {
         >
           Learn React
         </a>
-        <Logo />
       </header>
     </div>
   );
