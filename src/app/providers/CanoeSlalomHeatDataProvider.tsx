@@ -53,28 +53,26 @@ function reducer(draft: CanoeSlalomHeatData.Dataset, action: action) {
         case ACTION_TYPE_CHANGED:
             // 変更
             const row = action.payload.runner.row;
-            draft.runs.forEach(run => {
-                if (run.runner.row == row) {
-                    if (action.payload.started) {
-                        // スタートタイムの変更
+            const run = draft.runs.find(run => run.runner.row === row);
+            if (run) {
+                if (action.payload.started) {
+                    // スタートタイムの変更
 
-                    } else if (action.payload.finished) {
-                        // ゴールタイムの変更
+                } else if (action.payload.finished) {
+                    // ゴールタイムの変更
 
-                    } else if (action.payload.gate) {
-                        // ゲート判定の変更
+                } else if (action.payload.gate) {
+                    // ゲート判定の変更
+                    if (run.gates) {
                         const num = action.payload.gate.num;
-                        const judge = action.payload.gate.judge;
-                        if (run.gates) {
-                            run.gates.forEach(gate => {
-                                if (gate.num == num) {
-                                    gate.judge = judge;
-                                }
-                            });
+                        const gate = run.gates.find(gate => gate.num === num);
+                        if (gate) {
+                            gate.judge = action.payload.gate.judge;
+                            gate.fetching.isLoading = true;
                         }
                     }
                 }
-            });
+            }
             break;
         case ACTION_TYPE_UPDATED:
             // 更新 - サーバー反映処理完了（エラーを含む）
