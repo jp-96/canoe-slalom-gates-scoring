@@ -2,6 +2,7 @@ import HtmlTemplateDataSetter from './api/HtmlTemplateDataSetter';
 import CanoeSlalomHeatService from './api/CanoeSlalomHeatService';
 import AppConfig from './api/AppConfig';
 import Penalties from './api/penaltydata';
+import CanoeSlalomHeatData from './dao/CanoeSlalomHeatData';
 
 function doGet(e: GoogleAppsScript.Events.DoGet) {
     Logger.log(e);
@@ -24,7 +25,7 @@ function getData(sheetName: string, beginGate: number, gateLength: number): Pena
     return data;
 }
 
-function putData(sheetData: Penalties.SheetData): Penalties.SheetData {
+function putSingleData(sheetData: Penalties.SheetData): Penalties.SheetData {
     Logger.log(`sheetName:${sheetData.sheetName}`);
     Logger.log(sheetData);
     //const saved = Penalties.putSheetData(sheetData);
@@ -36,4 +37,9 @@ function putData(sheetData: Penalties.SheetData): Penalties.SheetData {
 function getDataset(criteria: CanoeSlalomHeatService.Criteria) {
     Logger.log(criteria);
     return CanoeSlalomHeatService.getDataset(criteria);
+}
+
+function putData(data: CanoeSlalomHeatData.Data) {
+    Logger.log(data);
+    return CanoeSlalomHeatService.putData(data);
 }

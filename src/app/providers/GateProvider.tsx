@@ -70,7 +70,7 @@ export default function GateProvider({ children }) {
                     sheetName,
                     sections: [{ ...section, gates: [{ ...gate }] }],
                 }
-                serverFunctions.putData(sheetData)
+                serverFunctions.putSingleData(sheetData)
                     .then((saved: Sheetdata.SheetData) => {
                         setSections(sections => {
                             const savedSection = saved.sections[0];
