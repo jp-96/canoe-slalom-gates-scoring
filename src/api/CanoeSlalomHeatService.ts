@@ -189,9 +189,10 @@ namespace CanoeSlalomHeatService {
                     seconds: r[2],
                 }
                 const seconds = CanoeSlalomHeatData.hmsToSeconds(hms);
+                const judge = CanoeSlalomHeatData.validateStartedTimeJudge(r[3]);
                 run.started = {
                     seconds,
-                    judge: r[3],
+                    judge,
                     fetching: {},
                 };
                 if (rsLocked[i]) {
@@ -212,9 +213,10 @@ namespace CanoeSlalomHeatService {
                     seconds: r[2],
                 }
                 const seconds = CanoeSlalomHeatData.hmsToSeconds(hms);
+                const judge = CanoeSlalomHeatData.validateFinishedTimeJudge(r[3]);
                 run.finished = {
                     seconds,
-                    judge: r[3],
+                    judge,
                     fetching: {},
                 };
                 if (rsLocked[i]) {
@@ -243,7 +245,7 @@ namespace CanoeSlalomHeatService {
                 const gates: CanoeSlalomHeatData.gate[] = [];
                 r.forEach((g, j) => {
                     const num = beginGate + j;
-                    const judge = g;
+                    const judge = CanoeSlalomHeatData.validateGateJudge(g);
                     const gate: CanoeSlalomHeatData.gate = {
                         num,
                         judge,

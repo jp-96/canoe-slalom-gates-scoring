@@ -4,6 +4,8 @@ import { GASClient } from 'gas-client';
 const { serverFunctions } = new GASClient();
 import CanoeSlalomHeatService from '../../api/CanoeSlalomHeatService';
 import CanoeSlalomHeatData from '../../dao/CanoeSlalomHeatData';
+import AppConfig from '../../api/AppConfig';
+import { useData as usePushedData } from './HtmlTemplateDataProvider';
 
 // ToDo: immer
 // https://immerjs.github.io/immer/example-setstate#useimmerreducer
@@ -97,11 +99,12 @@ const useDataset = (criteria: CanoeSlalomHeatService.Criteria): CanoeSlalomHeatD
 }
 
 export default function CanoeSlalomHeatDataProvider({ children }) {
+    const { data } = usePushedData<AppConfig.AppConfig>();
     const criteria: CanoeSlalomHeatService.Criteria = {
-        sheetName: 'テストデータ２',
+        sheetName: data.sheetName,
         gates: {
-            beginGate: 1,
-            gateLength: 5,
+            beginGate: data.beginGate,
+            gateLength: data.gateLength,
         },
     }
     const providerValue = useDataset(criteria)

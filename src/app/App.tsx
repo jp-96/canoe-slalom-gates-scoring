@@ -21,7 +21,6 @@ function App() {
         >
           Learn React
         </a>
-        <SectionJudgeList />
       </header>
     </div>
   );

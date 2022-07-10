@@ -163,7 +163,7 @@ namespace CanoeSlalomHeatData {
      * @returns 変換された値（無効な値の場合、例外発生）
      */
     export function validateStartedTimeJudge(value: any): startedTimeJudge {
-        switch (value) {
+        switch (String(value).toUpperCase()) {
             case CONSTS.JUDGE_NONE:
                 return CONSTS.JUDGE_NONE;
                 break;
@@ -189,7 +189,7 @@ namespace CanoeSlalomHeatData {
         /**
          * ゴールタイム判定
          */
-        judge: finishedTime;
+        judge: finishedTimeJudge;
     } & time
 
     type finishedTimeJudge = CONSTS.judgeNone | CONSTS.judgeDnf | CONSTS.judgeFinished | CONSTS.judgeDsq;
@@ -200,7 +200,7 @@ namespace CanoeSlalomHeatData {
      * @returns 変換された値（無効な値の場合、例外発生）
      */
     export function validateFinishedTimeJudge(value: any): finishedTimeJudge {
-        switch (value) {
+        switch (String(value).toUpperCase()) {
             case CONSTS.JUDGE_NONE:
                 return CONSTS.JUDGE_NONE;
                 break;
@@ -303,7 +303,7 @@ namespace CanoeSlalomHeatData {
      * @returns 変換された値（無効な値の場合、例外発生）
      */
     export function validateGateJudge(value: any): gateJudge {
-        switch (String(value)) {
+        switch (String(value).toUpperCase()) {
             case CONSTS.JUDGE_NONE:
                 return CONSTS.JUDGE_NONE;
                 break;

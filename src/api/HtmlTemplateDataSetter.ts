@@ -30,13 +30,7 @@ namespace HtmlTemplateDataSetter {
 
         const htmlTemplateDataContainerString = '<? try {?><?= data ?><? } catch {} ?>';
 
-        /**
-         * Encapsulate data in a data container and push to data
-         * @param template 
-         * @param data 
-         * @returns 
-         */
-        export function pushToData(template, data: any) {
+        export function pushToData(template: GoogleAppsScript.HTML.HtmlTemplate, data: any) {
             const container: DataContainer = { data };
             template.data = JSON.stringify(container);
             return template;

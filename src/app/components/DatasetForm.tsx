@@ -1,5 +1,8 @@
 import React from "react";
+import CanoeSlalomHeatData from "../../dao/CanoeSlalomHeatData";
 import { useData } from "../providers/CanoeSlalomHeatDataProvider";
+import DatasetGateJudge from "./DatasetGateJudge";
+
 export default function DatasetForm() {
     const { error, loading, dataset } = useData();
 
@@ -25,15 +28,32 @@ export default function DatasetForm() {
         return <div>No list.</div>;
     }
 
+    const getes = (v: CanoeSlalomHeatData.gate[] | undefined) => {
+        if (v) {
+            return v;
+        } else {
+            return [];
+        }
+    };
+
     return (
-        <div>
+        <>
             <p>{dataset.sheetName}</p>
-            {dataset.runs.map(run => (
-                <>
-                    <h1>[{run.runner.bib}] {run.runner.heat}</h1>
-                    <p>ゲート数：{run.gates ? run.gates.length : 'None'}</p>
-                </>
-            ))}
-        </div>
+            <div>
+                {dataset.runs.map(run => (
+                    <>
+                        <h1>[{run.runner.bib}] {run.runner.heat}</h1>
+                        {getes(run.gates).map(gate => (
+                            <DatasetGateJudge
+                                key={`${run.runner.row}-${gate.num}`}
+                                row={run.runner.row} num={gate.num} judge={gate.judge}
+                                isError={gate.fetching.hasError} isFailure={gate.fetching.isFailure}
+                                isLoading={gate.fetching.isLoading} isLocked={gate.isLocked}
+                            />
+                        ))}
+                    </>
+                ))}
+            </div>
+        </>
     );
 }

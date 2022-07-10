@@ -59,6 +59,7 @@
 .gate-penalty-0,
 .gate-penalty-2,
 .gate-penalty-50,
+.gate-penalty-dsq,
 .gate-penalty-dnf {
     position: absolute;
     font-family: arial;
@@ -89,6 +90,10 @@
 
 .gate-penalty-50 {
     left: 185px;
+}
+
+.gate-penalty-dsq {
+    left: 245px;
 }
 
 .gate-penalty-dnf {
