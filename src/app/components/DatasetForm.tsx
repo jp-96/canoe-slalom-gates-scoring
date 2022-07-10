@@ -2,6 +2,7 @@ import React from "react";
 import CanoeSlalomHeatData from "../../dao/CanoeSlalomHeatData";
 import { useData } from "../providers/CanoeSlalomHeatDataProvider";
 import DatasetGateJudge from "./DatasetGateJudge";
+import Logo from './Logo';
 
 export default function DatasetForm() {
     const { error, loading, dataset } = useData();
@@ -9,8 +10,9 @@ export default function DatasetForm() {
     if (error) {
         return (
             <>
+                <Logo className="App-logo-error" />
                 <h1>Error</h1>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <code>{JSON.stringify(error, null, 2)}</code>
             </>
         );
     }
@@ -18,8 +20,8 @@ export default function DatasetForm() {
     if (loading) {
         return (
             <>
+                <Logo className="App-logo" />
                 <h1>Loading...</h1>
-                <p>dataset</p>
             </>
         );
     }

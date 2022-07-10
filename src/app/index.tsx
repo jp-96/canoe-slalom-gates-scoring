@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 //import './index.css'; // ==> ../index.html
 import HtmlTemplateDataProvider from './providers/HtmlTemplateDataProvider';
 import CanoeSlalomHeatDataProvider from './providers/CanoeSlalomHeatDataProvider';
-import GateProvider from './providers/GateProvider';
 import App from './App';
 
 const root = ReactDOM.createRoot(
@@ -13,9 +12,7 @@ root.render(
   <React.StrictMode>
     <HtmlTemplateDataProvider>
       <CanoeSlalomHeatDataProvider>
-        <GateProvider>
-          <App />
-        </GateProvider>
+        <App />
       </CanoeSlalomHeatDataProvider>
     </HtmlTemplateDataProvider>
   </React.StrictMode>
