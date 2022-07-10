@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useGates } from "../providers/GateProvider";
+import { useData } from "../providers/CanoeSlalomHeatDataProvider";
 
 function DatasetGateJudge({ row, num, judge, isError = false, isFailure = false, isLoading = false, isLocked = false }) {
+    const {setGateJudge} = useData();
     const onGateJudge = judge => {
         if ((!isLoading) && (!isLocked)) {
-            // ToDo: ディスパッチの呼び出し
-            
+            setGateJudge(row, num, judge);
         }
     };
     const onGateJudge0 = () => onGateJudge('0');

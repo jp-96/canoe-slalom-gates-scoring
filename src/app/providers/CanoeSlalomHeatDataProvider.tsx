@@ -12,47 +12,72 @@ import { useData as usePushedData } from './HtmlTemplateDataProvider';
 
 type action = actionDatasetLoaded | actionDataChanged | actionDataUpdated;
 
+/**
+ * データセット取得完了
+ */
+const ACTION_TYPE_LOADED = 'loaded';
+type actionTypeLoaded = 'loaded';
+
 type actionDatasetLoaded = {
     type: actionTypeLoaded;
     payload: CanoeSlalomHeatData.Dataset;
 };
 
-const ACTION_TYPE_LOADED = 'loaded';
-type actionTypeLoaded = 'loaded';
+/**
+ * 画面データ変更
+ */
+const ACTION_TYPE_CHANGED = 'changed';
+type actionTypeChanged = 'changed';
 
 type actionDataChanged = {
     type: actionTypeChanged;
     payload: CanoeSlalomHeatData.Data;
 }
 
-const ACTION_TYPE_CHANGED = 'changed';
-type actionTypeChanged = 'changed';
+const ACTION_TYPE_UPDATED = 'updated';
+type actionTypeUpdated = 'updated';
 
 type actionDataUpdated = {
     type: actionTypeUpdated;
     payload: CanoeSlalomHeatData.Data;
 }
 
-const ACTION_TYPE_UPDATED = 'updated';
-type actionTypeUpdated = 'updated';
-
 function reducer(draft: CanoeSlalomHeatData.Dataset, action: action) {
     switch (action.type) {
         case ACTION_TYPE_LOADED:
-            // データセットの取得完了
+            // ロード完了 - データセットの取得完了
             // draftへ全てコピー
             draft.sheetName = action.payload.sheetName;
             draft.runs = action.payload.runs;
             break;
         case ACTION_TYPE_CHANGED:
             // 変更
+            const row = action.payload.runner.row;
+            draft.runs.forEach(run => {
+                if (run.runner.row == row) {
+                    if (action.payload.started) {
+                        // スタートタイムの変更
 
-            // サーバーへ反映
+                    } else if (action.payload.finished) {
+                        // ゴールタイムの変更
 
+                    } else if (action.payload.gate) {
+                        // ゲート判定の変更
+                        const num = action.payload.gate.num;
+                        const judge = action.payload.gate.judge;
+                        if (run.gates) {
+                            run.gates.forEach(gate => {
+                                if (gate.num == num) {
+                                    gate.judge = judge;
+                                }
+                            });
+                        }
+                    }
+                }
+            });
             break;
         case ACTION_TYPE_UPDATED:
-            // サーバー反映処理完了（エラーを含む）
-            // 更新
+            // 更新 - サーバー反映処理完了（エラーを含む）
             break;
         default:
             break;
@@ -63,6 +88,9 @@ type CanoeSlalomHeatDataContextType = {
     dataset: CanoeSlalomHeatData.Dataset;
     loading: boolean;
     error?: any;
+    setStartedTime: (row: number, seconds: number, judge: any) => void;
+    setFinishedTime: (row: number, seconds: number, judge: any) => void;
+    setGateJudge: (row: number, num: number, judge: any) => void;
 };
 
 const initialDataset: CanoeSlalomHeatData.Dataset = {
@@ -73,6 +101,9 @@ const initialDataset: CanoeSlalomHeatData.Dataset = {
 const defaultValue: CanoeSlalomHeatDataContextType = {
     dataset: initialDataset,
     loading: false,
+    setStartedTime: (row, seconds, judge) => undefined,
+    setFinishedTime: (row, seconds, judge) => undefined,
+    setGateJudge: (row, num, judge) => undefined,
 }
 
 const CanoeSlalomHeatDataContext = createContext(defaultValue);
@@ -83,18 +114,103 @@ const useDataset = (criteria: CanoeSlalomHeatService.Criteria): CanoeSlalomHeatD
     // データセットのreducer
     const [dataset, dispatch] = useImmerReducer(reducer, initialDataset);
 
+    const getDataAttrs = (row: number) => {
+        const sheetName = dataset.sheetName;
+        let bib = '';
+        let heat = '';
+        const runs = dataset.runs.filter(run => run.runner.row == row);
+        if (runs.length > 0) {
+            bib = runs[0].runner.bib;
+            heat = runs[0].runner.heat;
+        }
+        return { sheetName, bib, heat, fetching: {}, }
+    }
+
+    const setLoaded = (dataset: CanoeSlalomHeatData.Dataset) => {
+        dispatch({
+            type: ACTION_TYPE_LOADED,
+            payload: dataset,
+        });
+    };
+    const setChanged = (data: CanoeSlalomHeatData.Data) => {
+        dispatch({
+            type: ACTION_TYPE_CHANGED,
+            payload: data,
+        });
+    }
+    const setUpdated = (data: CanoeSlalomHeatData.Data) => {
+        dispatch({
+            type: ACTION_TYPE_UPDATED,
+            payload: data,
+        });
+    }
+
     // 初回データセット取得処理
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState();
     useEffect(() => {
         serverFunctions.getDataset(criteria)
-            .then(dataset => dispatch({ type: 'loaded', payload: dataset, }))
+            .then(setLoaded)
             .catch(setError)
             .finally(() => setLoading(false));
     }, []);
 
+    const setStartedTime = (row: number, seconds: number, judge: any) => {
+        const { sheetName, bib, heat, fetching } = getDataAttrs(row);
+        const data: CanoeSlalomHeatData.Data = {
+            sheetName,
+            runner: {
+                row,
+                bib,
+                heat,
+            },
+            started: {
+                seconds,
+                judge,
+                fetching,
+            }
+        }
+        setChanged(data);
+    }
+
+    const setFinishedTime = (row: number, seconds: number, judge: any) => {
+        const { sheetName, bib, heat, fetching } = getDataAttrs(row);
+        const data: CanoeSlalomHeatData.Data = {
+            sheetName,
+            runner: {
+                row,
+                bib,
+                heat,
+            },
+            finished: {
+                seconds,
+                judge,
+                fetching,
+            }
+        }
+        setChanged(data);
+    }
+
+    const setGateJudge = (row: number, num: number, judge: any) => {
+        const { sheetName, bib, heat, fetching } = getDataAttrs(row);
+        const data: CanoeSlalomHeatData.Data = {
+            sheetName,
+            runner: {
+                row,
+                bib,
+                heat,
+            },
+            gate: {
+                num,
+                judge,
+                fetching,
+            }
+        }
+        setChanged(data);
+    }
+
     return {
-        dataset, loading, error,
+        dataset, loading, error, setStartedTime, setFinishedTime, setGateJudge
     }
 }
 
