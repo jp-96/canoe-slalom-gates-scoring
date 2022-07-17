@@ -1,8 +1,10 @@
 import React from "react";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import { Virtuoso } from 'react-virtuoso'
+import MuiGateJudgeButton from "./MuiGateJudgeButton";
 import CanoeSlalomHeatData from "../../dao/CanoeSlalomHeatData";
 import { useData } from "../providers/CanoeSlalomHeatDataProvider";
-import DatasetGateJudge from "./DatasetGateJudge";
-import Logo from './Logo';
 
 export default function DatasetForm() {
     const { error, loading, dataset } = useData();
@@ -10,7 +12,6 @@ export default function DatasetForm() {
     if (error) {
         return (
             <>
-                <Logo className="App-logo-error" />
                 <h1>Error</h1>
                 <code>{JSON.stringify(error, null, 2)}</code>
             </>
@@ -20,7 +21,6 @@ export default function DatasetForm() {
     if (loading) {
         return (
             <>
-                <Logo className="App-logo" />
                 <h1>Loading...</h1>
             </>
         );
@@ -39,23 +39,28 @@ export default function DatasetForm() {
     };
 
     return (
-        <>
-            <p>{dataset.sheetName}</p>
-            <div>
-                {dataset.runs.map(run => (
-                    <>
+        <Virtuoso
+            className="AppContent"
+            data={dataset.runs}
+            itemContent={(index, run) => (
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    textAlign="center">
+                    <Stack direction="column" spacing={1}>
                         <h1>[{run.runner.bib}] {run.runner.heat}</h1>
                         {getes(run.gates).map(gate => (
-                            <DatasetGateJudge
+                            <MuiGateJudgeButton
                                 key={`${run.runner.row}-${gate.num}`}
                                 row={run.runner.row} num={gate.num} judge={gate.judge}
                                 isError={gate.fetching.hasError} isFailure={gate.fetching.isFailure}
                                 isLoading={gate.fetching.isLoading} isLocked={gate.isLocked}
                             />
                         ))}
-                    </>
-                ))}
-            </div>
-        </>
+                    </Stack>
+                </Box>
+            )}
+        />
     );
 }

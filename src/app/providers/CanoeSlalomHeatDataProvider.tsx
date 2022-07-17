@@ -346,7 +346,7 @@ export default function CanoeSlalomHeatDataProvider({ children }) {
             gateLength: data.gateLength,
         },
     }
-    const providerValue = useDataset(defaultValue.dataset, criteria)
+    const providerValue = useDataset({ ...defaultValue.dataset, sheetName: data.sheetName, }, criteria)
     return (
         <CanoeSlalomHeatDataContext.Provider value={providerValue}>
             {children}
