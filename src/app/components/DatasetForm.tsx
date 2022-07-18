@@ -50,14 +50,19 @@ export default function DatasetForm() {
                     textAlign="center">
                     <Stack direction="column" spacing={1}>
                         <h1>[{run.runner.bib}] {run.runner.heat}</h1>
-                        {getes(run.gates).map(gate => (
-                            <MuiGateJudgeButton
-                                key={`${run.runner.row}-${gate.num}`}
-                                row={run.runner.row} num={gate.num} judge={gate.judge}
-                                isError={gate.fetching.hasError} isFailure={gate.fetching.isFailure}
-                                isLoading={gate.fetching.isLoading} isLocked={gate.isLocked}
-                            />
-                        ))}
+                        {getes(run.gates).map(gate => {
+                            const isLocked = (gate.isLocked || (gate.direction === 'FREE'));
+                            const isDownStream = (gate.direction !== 'UP');
+                            return (
+                                <MuiGateJudgeButton
+                                    key={`${run.runner.row}-${gate.num}`}
+                                    row={run.runner.row} num={gate.num} isDownStream={isDownStream}
+                                    judge={gate.judge}
+                                    isError={gate.fetching.hasError} isFailure={gate.fetching.isFailure}
+                                    isLoading={gate.fetching.isLoading} isLocked={isLocked}
+                                />
+                            );
+                        })}
                     </Stack>
                 </Box>
             )}
