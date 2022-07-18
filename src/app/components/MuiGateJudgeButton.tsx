@@ -34,7 +34,7 @@ function JudgeToggleButton({ judge, isError = false, isFailure = false, isLoadin
             onSelectedJudge(newSelected);
         }
     };
-    const tbColor = isLocked ? 'standard' : isLoading ? 'standard' : isFailure ? 'error' : 'primary'
+    const tbColor = isLocked ? 'standard' : isLoading ? 'standard' : (isFailure || isError) ? 'error' : 'primary'
     return (
         <ToggleButtonGroup value={judge} exclusive onChange={handleSelected} color={tbColor}>
             <ToggleButton value="0" sx={buttonSx}>0</ToggleButton>

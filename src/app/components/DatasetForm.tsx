@@ -9,7 +9,7 @@ import { useData } from "../providers/CanoeSlalomHeatDataProvider";
 export default function DatasetForm() {
     const { error, loading, dataset } = useData();
 
-    if (error) {
+    if ((error) && (dataset.runs.length === 0)) {
         return (
             <>
                 <h1>Error</h1>
@@ -18,7 +18,7 @@ export default function DatasetForm() {
         );
     }
 
-    if (loading) {
+    if ((loading) && (dataset.runs.length === 0)) {
         return (
             <>
                 <h1>Loading...</h1>

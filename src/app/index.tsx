@@ -6,14 +6,14 @@ import CanoeSlalomHeatDataProvider from './providers/CanoeSlalomHeatDataProvider
 import App from './App';
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+    document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <HtmlTemplateDataProvider>
-      <CanoeSlalomHeatDataProvider>
-        <App />
-      </CanoeSlalomHeatDataProvider>
-    </HtmlTemplateDataProvider>
-  </React.StrictMode>
+    <React.StrictMode>
+        <HtmlTemplateDataProvider>
+            <CanoeSlalomHeatDataProvider>
+                <App />
+            </CanoeSlalomHeatDataProvider>
+        </HtmlTemplateDataProvider>
+    </React.StrictMode>
 );

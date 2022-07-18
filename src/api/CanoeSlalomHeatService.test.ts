@@ -114,6 +114,7 @@ function test_PutDataSingle_CanoeSlalomHeatService() {
         modGate = {
             num: gate.num,
             judge: '0',
+            direction: 'FREE', // dummy
             fetching: {},
         }
 
