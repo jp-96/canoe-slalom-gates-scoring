@@ -2,46 +2,61 @@ import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from '@mui/material/Button';
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { grey, green, red, blue, } from '@mui/material/colors';
 import { useData } from "../providers/CanoeSlalomHeatDataProvider";
 
 function GateNumber({ num, isDownStream = true, isLocked = false }) {
     const gateSx = {
-        fontSize: "1.2rem",
-        width: "50px",
-        height: "50px",
+        fontSize: '1.3rem',
+        width: '40px',
+        height: '40px',
+        lineHeight: '40px',
         border: 1,
-        borderRadius: "50%",
-        borderColor: isLocked ? 'gray' : isDownStream ? 'green' : 'red',
+        borderRadius: '50%',
+        borderColor: isLocked ? grey[200] : isDownStream ? green[500] : red[500],
+        color: isLocked ? grey[400] : blue[700],
+        userSelect: 'none',
     };
     return (
-        <Typography variant="caption" sx={gateSx} display="flex" justifyContent="center" alignItems="center">{num}</Typography>
+        <Typography variant="caption" sx={gateSx} align="center">
+            {num}
+        </Typography>
     );
 }
 
-function JudgeToggleButton({ judge, isError = false, isFailure = false, isLoading = false, isLocked = false, onSelectedJudge = f => f }) {
-    const buttonSx = {
-        width: "55px",
-        height: "50px",
-        fontSize: "1.2rem"
+function JudgeButton({ judge, isError = false, isFailure = false, isLoading = false, isLocked = false, onSelectedJudge = f => f }) {
+    const onSelectedJudge0 = () => onSelectedJudge('0');
+    const onSelectedJudge2 = () => onSelectedJudge('2');
+    const onSelectedJudge50 = () => onSelectedJudge('50');
+    const onSelectedJudgeDsq = () => onSelectedJudge('DSQ');
+
+    const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
+    const sx = {
+        width: "44px",
+        height: "40px",
+        fontSize: "1.2rem",
     };
-    const handleSelected = (
-        event: React.MouseEvent<HTMLElement>,
-        newSelected: string | null
-    ) => {
-        if (newSelected !== null) {
-            onSelectedJudge(newSelected);
-        }
+    const sxLeft = {
+        ...sx,
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
     };
-    const tbColor = isLocked ? 'standard' : isLoading ? 'standard' : (isFailure || isError) ? 'error' : 'primary'
+    const sxMiddle = {
+        ...sx,
+        borderRadius: 0,
+    };
+    const sxRight = {
+        ...sx,
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+    };
     return (
-        <ToggleButtonGroup value={judge} exclusive onChange={handleSelected} color={tbColor}>
-            <ToggleButton value="0" sx={buttonSx}>0</ToggleButton>
-            <ToggleButton value="2" sx={buttonSx}>2</ToggleButton>
-            <ToggleButton value="50" sx={buttonSx}>50</ToggleButton>
-            <ToggleButton value="DSQ" sx={buttonSx}>DSQ</ToggleButton>
-        </ToggleButtonGroup>
+        <Stack spacing={'-1px'} direction="row">
+            <Button variant={judge === '0' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxLeft} onClick={onSelectedJudge0}>0</Button>
+            <Button variant={judge === '2' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxMiddle} onClick={onSelectedJudge2}>2</Button>
+            <Button variant={judge === '50' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxMiddle} onClick={onSelectedJudge50}>50</Button>
+            <Button variant={judge === 'DSQ' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxRight} onClick={onSelectedJudgeDsq}>DSQ</Button>
+        </Stack>
     );
 }
 
@@ -54,9 +69,9 @@ export default function MuiGateJudgeButton({ row, num, judge, isDownStream = tru
     };
 
     return (
-        <Stack direction="row" spacing={2} >
+        <Stack direction="row" spacing={1} >
             <GateNumber num={num} isDownStream={isDownStream} isLocked={isLocked} />
-            <JudgeToggleButton judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onSelectedJudge={onSelectedJudge} />
+            <JudgeButton judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onSelectedJudge={onSelectedJudge} />
         </Stack>
     );
 }
