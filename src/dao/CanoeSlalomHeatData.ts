@@ -6,61 +6,80 @@ namespace CanoeSlalomHeatData {
         /**
          * 判定 - 未
          */
-        export const JUDGE_NONE = ''
-        export type judgeNone = ''
+        export const JUDGE_NONE = '';
+        export type judgeNone = '';
 
         /**
          * 判定 - 棄権 (スタートタイム) 
          */
-        export const JUDGE_DNS = 'DNS'
-        export type judgeDns = 'DNS'
+        export const JUDGE_DNS = 'DNS';
+        export type judgeDns = 'DNS';
 
         /**
          * 判定 - スタート済 (スタートタイム) 
          */
-        export const JUDGE_STARTED = 'STARTED'
-        export type judgeStarted = 'STARTED'
+        export const JUDGE_STARTED = 'STARTED';
+        export type judgeStarted = 'STARTED';
 
         /**
          * 判定 - 途中棄権 (ゴールタイム) 
          */
-        export const JUDGE_DNF = 'DNF'
-        export type judgeDnf = 'DNF'
+        export const JUDGE_DNF = 'DNF';
+        export type judgeDnf = 'DNF';
 
         /**
          * 判定 - ゴール済 (ゴールタイム) 
          */
-        export const JUDGE_FINISHED = 'FINISHED'
-        export type judgeFinished = 'FINISHED'
+        export const JUDGE_FINISHED = 'FINISHED';
+        export type judgeFinished = 'FINISHED';
 
         /**
          * 判定 - ペナルティ0（ゲート判定）
          */
-        export const JUDGE_P0 = '0'
-        export type judgeP0 = '0'
+        export const JUDGE_P0 = '0';
+        export type judgeP0 = '0';
 
         /**
          * 判定 - ペナルティ2（ゲート判定）
          */
-        export const JUDGE_P2 = '2'
-        export type judgeP2 = '2'
+        export const JUDGE_P2 = '2';
+        export type judgeP2 = '2';
 
         /**
          * 判定 - ペナルティ50（ゲート判定）
          */
-        export const JUDGE_P50 = '50'
-        export type judgeP50 = '50'
+        export const JUDGE_P50 = '50';
+        export type judgeP50 = '50';
 
         /**
          * 判定 - 失格（スタートタイム/ゲート判定/ゴールタイム）
          */
-        export const JUDGE_DSQ = 'DSQ'
-        export type judgeDsq = 'DSQ'
+        export const JUDGE_DSQ = 'DSQ';
+        export type judgeDsq = 'DSQ';
 
         /**
          * 最大ゲート番号
          */
         export const GATE_MAX = 30;
+
+        /**
+         * ダウンストリームゲート
+         * （UP、FREEの何れでもなけらば、DOWN）
+         */
+        export const GATE_DOWNSTREAM = 'DOWN';
+        export type gateDownstream = 'DOWN';
+
+        /**
+         * アップストリームゲート
+         */
+        export const GATE_UPSTREAM = 'UP';
+        export type gateUpstream = 'UP';
+
+        /**
+         * 廃止ゲート(ゲート番号設置後に廃止された等)
+         */
+        export const GATE_FREE = 'FREE';
+        export type gateFree = 'FREE';
 
     }
 
@@ -277,11 +296,15 @@ namespace CanoeSlalomHeatData {
          */
         num: number;
         /**
+         * 進行方向
+         */
+        direction: gateType;
+        /**
          * ゲート判定
          */
         judge: gateJudge;
     } & system;
-
+    type gateType = CONSTS.gateDownstream | CONSTS.gateUpstream | CONSTS.gateFree;
     type gateJudge = CONSTS.judgeNone | CONSTS.judgeP0 | CONSTS.judgeP2 | CONSTS.judgeP50 | CONSTS.judgeDsq;
 
     /**
@@ -295,6 +318,32 @@ namespace CanoeSlalomHeatData {
             throw new Error(`Invalid Gate num: '${value}' [1-${CONSTS.GATE_MAX}]`);
         }
         return num;
+    }
+
+    /**
+     * ゲートタイプへの変換
+     * @param values 変換する値のリスト
+     * @returns ゲートタイプのリスト
+     */
+    export function convGateTypeList(values: any[]) {
+        const gateTypes: gateType[] = [];
+        const convGateType = value => {
+            switch (String(value).toUpperCase()) {
+                case CONSTS.GATE_FREE:
+                    return CONSTS.GATE_FREE;
+                    break;
+                case CONSTS.GATE_UPSTREAM:
+                    return CONSTS.GATE_UPSTREAM;
+                    break;
+                default:
+                    return CONSTS.GATE_DOWNSTREAM;
+                    break;
+            }
+        };
+        values.forEach(v => {
+            gateTypes.push(convGateType(v));
+        });
+        return gateTypes;
     }
 
     /**

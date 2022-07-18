@@ -193,6 +193,19 @@ function reducer(draft: CanoeSlalomHeatData.Dataset, action: action) {
 
 const useDataset = (initialDataset: CanoeSlalomHeatData.Dataset, criteria: CanoeSlalomHeatService.Criteria): CanoeSlalomHeatDataContextType => {
     const [dataset, dispatch] = useImmerReducer(reducer, initialDataset);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState();
+    const loadDataset = () => {
+        if (loading) {
+            return;
+        }
+        setLoading(true);
+        setError(undefined);
+        serverFunctions.getDataset(criteria)
+            .then(dispatchLoaded)
+            .catch(setError)
+            .finally(() => setLoading(false));
+    }
     const getDataAttrs = (row: number) => {
         const sheetName = dataset.sheetName;
         let bib = '';
@@ -277,21 +290,17 @@ const useDataset = (initialDataset: CanoeSlalomHeatData.Dataset, criteria: Canoe
             gate: {
                 num,
                 judge,
+                direction: 'FREE',  // dummy
                 fetching,
             }
         }
         dispatchChanged(data);
     }
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState();
     useEffect(() => {
-        serverFunctions.getDataset(criteria)
-            .then(dispatchLoaded)
-            .catch(setError)
-            .finally(() => setLoading(false));
+        loadDataset();
     }, []);
     return {
-        dataset, loading, error, setStartedTime, setFinishedTime, setGateJudge
+        dataset, loading, error, setStartedTime, setFinishedTime, setGateJudge, loadDataset
     }
 }
 
@@ -320,6 +329,10 @@ type CanoeSlalomHeatDataContextType = {
      * ゲート判定変更設定（アクション）
      */
     setGateJudge: (row: number, num: number, judge: any) => void;
+    /**
+     * Datasetの読み込み
+     */
+    loadDataset: () => void;
 };
 
 const defaultValue: CanoeSlalomHeatDataContextType = {
@@ -331,6 +344,7 @@ const defaultValue: CanoeSlalomHeatDataContextType = {
     setStartedTime: (row, seconds, judge) => undefined,
     setFinishedTime: (row, seconds, judge) => undefined,
     setGateJudge: (row, num, judge) => undefined,
+    loadDataset: () => undefined,
 }
 
 const CanoeSlalomHeatDataContext = createContext(defaultValue);

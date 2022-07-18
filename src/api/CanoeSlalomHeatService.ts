@@ -80,9 +80,8 @@ namespace CanoeSlalomHeatService {
             ]
         ]);
         // ゲート判定
-        sheet.getRange(CONSTS.DATA_HEADER_ROW1, CONSTS.GATE_COLUMN).setValue('GATE');
-        sheet.getRange(CONSTS.DATA_HEADER_ROW2, CONSTS.GATE_COLUMN, 1, CanoeSlalomHeatData.CONSTS.GATE_MAX).setValues([
-            [...Array(CanoeSlalomHeatData.CONSTS.GATE_MAX)].map((_, i) => `[${i + 1}]`)
+        sheet.getRange(CONSTS.DATA_HEADER_ROW1, CONSTS.GATE_COLUMN, 1, CanoeSlalomHeatData.CONSTS.GATE_MAX).setValues([
+            [...Array(CanoeSlalomHeatData.CONSTS.GATE_MAX)].map((_, i) => `G[${i + 1}]`)
         ]);
         // スクロール固定
         sheet.setFrozenRows(CONSTS.DATA_HEADER_ROW2);
@@ -240,14 +239,17 @@ namespace CanoeSlalomHeatService {
                 throw new Error(`Invalid gates: ${beginGate} (${gateLength})`);
             }
             const column = CONSTS.GATE_COLUMN + beginGate - 1;
+            const gateTypes = CanoeSlalomHeatData.convGateTypeList(sheet.getRange(CONSTS.DATA_HEADER_ROW2, column, 1, gateLength).getValues()[0]);
             const rs = sheet.getRange(CONSTS.DATA_TOP_ROW, column, rowCount, gateLength).getValues();
             rs.forEach((r, i) => {
                 const gates: CanoeSlalomHeatData.gate[] = [];
                 r.forEach((g, j) => {
                     const num = beginGate + j;
+                    const direction = gateTypes[j];
                     const judge = CanoeSlalomHeatData.validateGateJudge(g);
                     const gate: CanoeSlalomHeatData.gate = {
                         num,
+                        direction,
                         judge,
                         fetching: {},
                     }
@@ -312,6 +314,7 @@ namespace CanoeSlalomHeatService {
             // ゲート判定の更新
             const firstGate = firstRun.gates[0];
             const num = firstGate.num;
+            const direction = firstGate.direction;
             const range = sheet.getRange(sheetRow, num + CONSTS.GATE_COLUMN - 1);
             let judge;
             if ((isFailure) || (isLocked)) {
@@ -322,6 +325,7 @@ namespace CanoeSlalomHeatService {
             }
             const gate: CanoeSlalomHeatData.gate = {
                 num,
+                direction,
                 judge,
                 fetching: {},
             };
