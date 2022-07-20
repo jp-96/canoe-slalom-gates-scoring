@@ -2,15 +2,18 @@ import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import NumberFormat from "react-number-format";
 import { grey, green, red, blue, } from '@mui/material/colors';
 import { useData } from "../providers/CanoeSlalomHeatDataProvider";
+import CanoeSlalomHeatData from '../../dao/CanoeSlalomHeatData';
 
 function TimeLabel({ startOrFinish, isLocked = false }) {
     const sx = {
         fontSize: '1.3rem',
-        width: '40px',
-        height: '40px',
-        lineHeight: '40px',
+        width: '42px',
+        height: '42px',
+        lineHeight: '42px',
         border: 1,
         borderRadius: '3px',
         borderColor: isLocked ? grey[200] : blue[500],
@@ -28,11 +31,25 @@ function TimeLabel({ startOrFinish, isLocked = false }) {
 function TimeInput({ seconds, isError = false, isFailure = false, isLoading = false, isLocked = false, onChanged = f => f }) {
     const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary';
 
+    const hms = CanoeSlalomHeatData.secondsToHms(seconds);
+    const hmsValue = (hms.hours * 100 + hms.minutes) * 100 + hms.seconds;
+
     return (
-        <Stack direction="row" spacing={1} >
-            <p>
-                {seconds}
-            </p>
+        <Stack direction="row" spacing={'-1px'} sx={{ m: '0px', }}>
+            <NumberFormat
+                className="hours"
+                value={hms.hours}
+            />
+            <NumberFormat
+                className="minutes"
+                value={hms.minutes}
+            />
+            <NumberFormat
+                className="seconds"
+                value={hms.seconds}
+                decimalScale={3}
+                fixedDecimalScale={true}
+            />
         </Stack>
     );
 }
@@ -42,11 +59,11 @@ function JudgeButton({ startOrFinish, judge, isError = false, isFailure = false,
     const onSelectedDns = () => onSelected('DNS');
     const onSelectedFinished = () => onSelected('FINISHED');
     const onSelectedDnf = () => onSelected('DNF');
-    
+
     const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
     const sx = {
         width: "44px",
-        height: "40px",
+        height: "42px",
         fontSize: "1.2rem",
     };
     const sxLeft = {
@@ -78,7 +95,7 @@ function JudgeButton({ startOrFinish, judge, isError = false, isFailure = false,
     );
 
     return (
-        <Stack spacing={'-1px'} direction="row">
+        <Stack spacing={'-1px'} direction="row" sx={{ m: '0px' }}>
             {startOrFinish === 'START' ? (<StartedButton />) : (<FinishedButton />)}
             {startOrFinish === 'START' ? (<DnsButton />) : (<DnfButton />)}
         </Stack>
@@ -104,7 +121,7 @@ export default function MuiTimeInput({ row, startOrFinish, seconds, judge, isErr
     }
 
     return (
-        <Stack direction="row" spacing={1} >
+        <Stack direction="row" spacing={1} sx={{ m: '0px' }}>
             <TimeLabel startOrFinish={startOrFinish} isLocked={isLocked} />
             <TimeInput seconds={seconds} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onChanged={onChangedTime} />
             <JudgeButton startOrFinish={startOrFinish} judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onSelected={onSelectedJudge} />

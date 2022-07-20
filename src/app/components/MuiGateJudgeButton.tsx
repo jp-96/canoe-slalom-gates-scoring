@@ -8,9 +8,9 @@ import { useData } from "../providers/CanoeSlalomHeatDataProvider";
 function GateNumber({ num, isDownStream = true, isLocked = false }) {
     const gateSx = {
         fontSize: '1.3rem',
-        width: '40px',
-        height: '40px',
-        lineHeight: '40px',
+        width: '42px',
+        height: '42px',
+        lineHeight: '42px',
         border: 1,
         borderRadius: '50%',
         borderColor: isLocked ? grey[200] : isDownStream ? green[500] : red[500],
@@ -33,7 +33,7 @@ function JudgeButton({ judge, isError = false, isFailure = false, isLoading = fa
     const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
     const sx = {
         width: "44px",
-        height: "40px",
+        height: "42px",
         fontSize: "1.2rem",
     };
     const sxLeft = {
@@ -51,7 +51,7 @@ function JudgeButton({ judge, isError = false, isFailure = false, isLoading = fa
         borderBottomLeftRadius: 0,
     };
     return (
-        <Stack spacing={'-1px'} direction="row">
+        <Stack direction="row" spacing={'-1px'} sx={{ m: '0px' }}>
             <Button variant={judge === '0' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxLeft} onClick={onSelectedJudge0}>0</Button>
             <Button variant={judge === '2' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxMiddle} onClick={onSelectedJudge2}>2</Button>
             <Button variant={judge === '50' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxMiddle} onClick={onSelectedJudge50}>50</Button>
@@ -69,7 +69,7 @@ export default function MuiGateJudgeButton({ row, num, judge, isDownStream = tru
     };
 
     return (
-        <Stack direction="row" spacing={1} >
+        <Stack direction="row" spacing={1} sx={{ m: '0px' }}>
             <GateNumber num={num} isDownStream={isDownStream} isLocked={isLocked} />
             <JudgeButton judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onSelectedJudge={onSelectedJudge} />
         </Stack>

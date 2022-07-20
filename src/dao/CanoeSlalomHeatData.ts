@@ -1,4 +1,3 @@
-export default CanoeSlalomHeatData;
 namespace CanoeSlalomHeatData {
 
     export namespace CONSTS {
@@ -283,7 +282,7 @@ namespace CanoeSlalomHeatData {
         return {
             hours,
             minutes,
-            seconds: seconds - ((hours * 60) + minutes) * 60,
+            seconds: (seconds * 1000 - (hours * 60 + minutes) * 60 * 1000) / 1000,
         };
     }
 
@@ -428,3 +427,5 @@ namespace CanoeSlalomHeatData {
     type IS_FAILURE = true;
 
 }
+
+export default CanoeSlalomHeatData;
