@@ -355,10 +355,18 @@ export default function CanoeSlalomHeatDataProvider({ children }) {
     const { data } = usePushedData<AppConfig.AppConfig>();
     const criteria: CanoeSlalomHeatService.Criteria = {
         sheetName: data.sheetName,
-        gates: {
+    }
+    if (data.gateLength > 0) {
+        criteria.gates = {
             beginGate: data.beginGate,
             gateLength: data.gateLength,
-        },
+        }
+    }
+    if (data.start > 0) {
+        criteria.started = true;
+    }
+    if (data.finish > 0) {
+        criteria.finished = true;
     }
     const providerValue = useDataset({ ...defaultValue.dataset, sheetName: data.sheetName, }, criteria)
     return (

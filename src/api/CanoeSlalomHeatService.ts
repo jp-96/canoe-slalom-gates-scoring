@@ -266,89 +266,6 @@ namespace CanoeSlalomHeatService {
         return dataset;
     }
 
-    export function putDataSingle(dataset: CanoeSlalomHeatData.Dataset) {
-        const sheetName = dataset.sheetName;
-        const sheet = getSheet(sheetName);
-        const rowCount = getRowCount(sheet);
-        const firstRun = dataset.runs[0];
-        const firstRunner = firstRun.runner;
-        const row = firstRunner.row;
-        const sheetRow = CONSTS.DATA_TOP_ROW + row;
-        if (row >= rowCount) {
-            throw new Error('Invalid row: ${row}');
-        }
-        let run: CanoeSlalomHeatData.run;
-        let runner: CanoeSlalomHeatData.runner;
-        let isFailure = false;
-        let isLocked = false;
-        (() => {
-            // 選手データリストの取得
-            const r = sheet.getRange(sheetRow, CONSTS.RUNNER_COLUMN, 1, CONSTS.RUNNER_LENGTH).getValues()[0];
-            runner = {
-                row,
-                bib: String(r[0]),
-                heat: String(r[1]),
-            }
-            if ((runner.bib != firstRunner.bib) || (runner.heat != firstRunner.heat)) {
-                isFailure = true;
-            }
-            if (String(r[2]) != '') {
-                isFailure = true;
-                isLocked = true;
-            }
-            run = {
-                runner,
-            };
-        })();
-        if (firstRun.started) {
-            // スタートタイムの更新
-
-            throw new Error('ToDo: putDataSingle - スタートタイムの更新');
-
-        } else if (firstRun.finished) {
-            // フィニッシュタイムの更新
-
-            throw new Error('ToDo: putDataSingle - フィニッシュタイムの更新');
-
-        } else if (firstRun.gates) {
-            // ゲート判定の更新
-            const firstGate = firstRun.gates[0];
-            const num = firstGate.num;
-            const direction = firstGate.direction;
-            const range = sheet.getRange(sheetRow, num + CONSTS.GATE_COLUMN - 1);
-            let judge;
-            if ((isFailure) || (isLocked)) {
-                judge = range.getValue();
-            } else {
-                judge = firstGate.judge;
-                range.setValue(judge);
-            }
-            const gate: CanoeSlalomHeatData.gate = {
-                num,
-                direction,
-                judge,
-                fetching: {},
-            };
-            if (isLocked) {
-                gate.isLocked = isLocked;
-            }
-            if (isFailure) {
-                gate.fetching = { isFailure };
-            }
-            run.gates = [
-                gate,
-            ]
-        } else {
-            // 対象なし
-            throw new Error('No objects for putDataSingle.');
-        }
-        const updated: CanoeSlalomHeatData.Dataset = {
-            sheetName,
-            runs: [run,],
-        };
-        return updated;
-    }
-
     export function putData(data: CanoeSlalomHeatData.Data) {
         const sheet = getSheet(data.sheetName);
         const rowCount = getRowCount(sheet);
@@ -382,17 +299,51 @@ namespace CanoeSlalomHeatService {
             // スタートタイムの更新
             draftData.started = { ...data.started, ...draftSystem, };
             ((draft: CanoeSlalomHeatData.startedTime) => {
-
-                throw new Error('ToDo: putData - スタートタイムの更新');
-
+                const range = sheet.getRange(sheetRow, CONSTS.START_COLUMN, 1, CONSTS.START_LENGTH);
+                if (draft.fetching.isFailure) {
+                    const r = range.getValues()[0];
+                    const hms = {
+                        hours: r[0],
+                        minutes: r[1],
+                        seconds: r[2],
+                    }
+                    draft.seconds = CanoeSlalomHeatData.hmsToSeconds(hms);
+                    draft.judge = CanoeSlalomHeatData.validateStartedTimeJudge(r[3]);
+                } else {
+                    const hms = CanoeSlalomHeatData.secondsToHms(draft.seconds)
+                    const r = [
+                        hms.hours,
+                        hms.minutes,
+                        hms.seconds,
+                        CanoeSlalomHeatData.validateStartedTimeJudge(draft.judge),
+                    ];
+                    range.setValues([r]);
+                }
             })(draftData.started);
         } else if (data.finished) {
             // ゴールタイムの更新
             draftData.finished = { ...data.finished, ...draftSystem, };
             ((draft: CanoeSlalomHeatData.finishedTime) => {
-
-                throw new Error('ToDo: putData - ゴールタイムの更新');
-
+                const range = sheet.getRange(sheetRow, CONSTS.FINISH_COLUMN, 1, CONSTS.FINISH_LENGTH);
+                if (draft.fetching.isFailure) {
+                    const r = range.getValues()[0];
+                    const hms = {
+                        hours: r[0],
+                        minutes: r[1],
+                        seconds: r[2],
+                    }
+                    draft.seconds = CanoeSlalomHeatData.hmsToSeconds(hms);
+                    draft.judge = CanoeSlalomHeatData.validateFinishedTimeJudge(r[3]);
+                } else {
+                    const hms = CanoeSlalomHeatData.secondsToHms(draft.seconds)
+                    const r = [
+                        hms.hours,
+                        hms.minutes,
+                        hms.seconds,
+                        CanoeSlalomHeatData.validateFinishedTimeJudge(draft.judge),
+                    ];
+                    range.setValues([r]);
+                }
             })(draftData.finished);
 
         } else if (data.gate) {
