@@ -6,10 +6,10 @@ import AppConfig from './api/AppConfig';
 function doGet(e: GoogleAppsScript.Events.DoGet) {
     Logger.log(e);
     const p = e.parameter;
-    const appConfig = AppConfig.buildAppConfig(p.sheetName, p.beginGate, p.gateLength);
-    // if (appConfig.sheetName != "テストデータ") {
-    //     return;
-    // }
+    const appConfig = AppConfig.buildAppConfig(p.sheetName, p.beginGate, p.gateLength, p.start, p.finish);
+    if (appConfig.sheetName === 'config') {
+        return;
+    }
     const template = HtmlTemplateDataSetter.createTemplateFromFile("index", appConfig);
     return template
         .evaluate()

@@ -2,6 +2,7 @@ import React from "react";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { Virtuoso } from 'react-virtuoso'
+import MuiTimeInput from "./MuiTimeInput";
 import MuiGateJudgeButton from "./MuiGateJudgeButton";
 import CanoeSlalomHeatData from "../../dao/CanoeSlalomHeatData";
 import { useData } from "../providers/CanoeSlalomHeatDataProvider";
@@ -30,6 +31,14 @@ export default function DatasetForm() {
         return <div>No list.</div>;
     }
 
+    const startedTimes = (v: CanoeSlalomHeatData.startedTime | undefined) => {
+        if (v) {
+            return [v];
+        } else {
+            return [];
+        }
+    }
+
     const getes = (v: CanoeSlalomHeatData.gate[] | undefined) => {
         if (v) {
             return v;
@@ -37,6 +46,14 @@ export default function DatasetForm() {
             return [];
         }
     };
+
+    const finishedTimes = (v: CanoeSlalomHeatData.finishedTime | undefined) => {
+        if (v) {
+            return [v];
+        } else {
+            return [];
+        }
+    }
 
     return (
         <Virtuoso
@@ -50,6 +67,13 @@ export default function DatasetForm() {
                     textAlign="center">
                     <Stack direction="column" spacing={1}>
                         <h1>[{run.runner.bib}] {run.runner.heat}</h1>
+                        {startedTimes(run.started).map(time => {
+                            return <MuiTimeInput key={`${run.runner.row}-START`}
+                                row={run.runner.row} startOrFinish={'START'}
+                                seconds={time.seconds} judge={time.judge}
+                                isError={time.fetching.hasError} isFailure={time.fetching.isFailure}
+                                isLoading={time.fetching.isLoading} isLocked={time.isLocked} />
+                        })}
                         {getes(run.gates).map(gate => {
                             const isLocked = (gate.isLocked || (gate.direction === 'FREE'));
                             const isDownStream = (gate.direction !== 'UP');
@@ -62,6 +86,13 @@ export default function DatasetForm() {
                                     isLoading={gate.fetching.isLoading} isLocked={isLocked}
                                 />
                             );
+                        })}
+                        {finishedTimes(run.finished).map(time => {
+                            return <MuiTimeInput key={`${run.runner.row}-FINISH`}
+                                row={run.runner.row} startOrFinish={'FINISH'}
+                                seconds={time.seconds} judge={time.judge}
+                                isError={time.fetching.hasError} isFailure={time.fetching.isFailure}
+                                isLoading={time.fetching.isLoading} isLocked={time.isLocked} />
                         })}
                     </Stack>
                 </Box>
