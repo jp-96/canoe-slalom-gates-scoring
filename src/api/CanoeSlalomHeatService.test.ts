@@ -101,10 +101,9 @@ function test_PutDataSingle_CanoeSlalomHeatService() {
 
     let modGate: CanoeSlalomHeatData.gate;
     let modRunner: CanoeSlalomHeatData.runner;
-    let modRun: CanoeSlalomHeatData.run;
-    let modDataset: CanoeSlalomHeatData.Dataset;
 
-    let result: CanoeSlalomHeatData.Dataset;
+    let modData:CanoeSlalomHeatData.Data;
+    let result: any;
 
     run = dataset.runs[0];
     runner = run.runner;
@@ -124,16 +123,12 @@ function test_PutDataSingle_CanoeSlalomHeatService() {
             heat: runner.heat,
         }
 
-        modRun = {
-            runner: modRunner,
-            gates: [modGate,],
-        };
-
-        modDataset = {
+        modData = {
             sheetName: dataset.sheetName,
-            runs: [modRun,],
+            runner: modRunner,
+            gate: modGate,
         };
-        result = CanoeSlalomHeatService.putDataSingle(modDataset);
+        result = CanoeSlalomHeatService.putData(modData);
         Logger.log(result);
     }
 }

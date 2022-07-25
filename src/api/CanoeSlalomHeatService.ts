@@ -49,7 +49,7 @@ namespace CanoeSlalomHeatService {
 
     export function createNewSheet(sheetName: string) {
         const spread = SpreadsheetApp.getActiveSpreadsheet()
-        const sheet = spread.insertSheet(sheetName, spread.getSheets().length);
+        const sheet = spread.insertSheet(`heat:${sheetName}`, spread.getSheets().length);
         // 選手データ
         sheet.getRange(CONSTS.DATA_HEADER_ROW1, CONSTS.RUNNER_COLUMN).setValue('RUNNER');
         sheet.getRange(CONSTS.DATA_HEADER_ROW2, CONSTS.RUNNER_COLUMN, 1, CONSTS.RUNNER_LENGTH).setValues([
@@ -126,11 +126,23 @@ namespace CanoeSlalomHeatService {
      * @returns スプレッドシート
      */
     function getSheet(sheetName: string) {
-        const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+        const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(`heat:${sheetName}`);
         if (!sheet) {
             throw new Error(`Missing sheet: '${sheetName}'`);
         }
         return sheet;
+    }
+    
+    export function getSheetNameList() {
+        const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+        const r: string[] = [];
+        sheets.forEach(v=>{
+            const sheetName = v.getSheetName();
+            if (sheetName.startsWith('heat:')) {
+                r.push(sheetName.substring(5));
+            }
+        });
+        return r;
     }
 
     /**
