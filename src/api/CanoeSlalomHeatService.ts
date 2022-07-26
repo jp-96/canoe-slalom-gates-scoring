@@ -184,7 +184,11 @@ namespace CanoeSlalomHeatService {
                 const run: CanoeSlalomHeatData.run = {
                     runner,
                 };
-                rsLocked.push(String(r[2]) != '');  // isLocked
+                const isLocked = String(r[2]) != '';
+                if (isLocked) {
+                    runner.locked = String(r[2]);
+                }
+                rsLocked.push(isLocked);  // isLocked
                 dataset.runs.push(run);
             });
         })();
