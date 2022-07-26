@@ -161,6 +161,10 @@ namespace CanoeSlalomHeatData {
          * レース名
          */
         heat: string;
+        /**
+         * 行ロック情報
+         */
+        locked?: string;
     }
 
     /**
