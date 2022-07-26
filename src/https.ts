@@ -6,7 +6,7 @@ import AppConfig from './api/AppConfig';
 
 function doGet(e: GoogleAppsScript.Events.DoGet) {
     Logger.log(e);
-    const u = parsePathInfo(e);
+    const u = parsePathInfo_(e);
     Logger.log(u);
 
     const webApp = () => {
@@ -19,38 +19,22 @@ function doGet(e: GoogleAppsScript.Events.DoGet) {
             .setTitle("Canoe Slalom Scoring App.");
     };
 
-    const getHeatsAll = () => {
-        const json = WebApiService.getHeatsAll();
-        return responseJson(json);
-    }
-
-    switch (u.paths.length) {
-        case 1:
-            if (u.paths[0] === 'api') {
-                const v = u.values.api;
-                if (v) {
-                    // 未サポート
-                } else {
-                    // スタートリスト名一覧
-                    return getHeatsAll();
-                }
-            }
-            break;
-        case 2:
-            break;
-        default:
-            break;
-    }
-
     // アプリ
     return webApp();
 }
 
+/**
+curl -i -d '{"operationId":"getHeatsAll", "operationData":{}}' \
+  -L 'https://script.google.com/.../exec' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json"
+*/
 function doPost(e: GoogleAppsScript.Events.DoPost) {
+    // curl等からアクセスすると認証ページへ遷移してしまうため、path(pathInfo)を設定しないこと。
     Logger.log(e);
-    const u = parsePathInfo(e);
-    Logger.log(u);
-
+    const p: WebApiService.PostParameter = JSON.parse(e.postData.contents);
+    const result = WebApiService[p.operationId](p.operationData);
+    return createJsonResponse_({ result });
 }
 
 function getDataset(criteria: CanoeSlalomHeatService.Criteria) {
@@ -63,7 +47,7 @@ function putData(data: CanoeSlalomHeatData.Data) {
     return CanoeSlalomHeatService.putData(data);
 }
 
-function parsePathInfo(e: any) {
+function parsePathInfo_(e: any /** GoogleAppsScript.Events.DoGet */) {
     const paths: string[] = [];
     const values: any = {};
     const r = {
@@ -87,7 +71,7 @@ function parsePathInfo(e: any) {
     return r;
 }
 
-function responseJson(json: any) {
+function createJsonResponse_(json: any) {
     return ContentService
         .createTextOutput(JSON.stringify(json))
         .setMimeType(ContentService.MimeType.JSON);

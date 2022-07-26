@@ -2,8 +2,12 @@ import WebApiData from '../dao/WebApiData';
 import CanoeSlalomHeatService from './CanoeSlalomHeatService';
 
 namespace WebApiService {
-
-    export function getHeatsAll() {
+    export interface PostParameter {
+        operationId: string;
+        operationData: any;
+    }
+    
+    export function getHeatsAll(operationData: any) {
         const heats: WebApiData.Heat[] = [];
         const names = CanoeSlalomHeatService.getSheetNameList();
         names.forEach(name => {
