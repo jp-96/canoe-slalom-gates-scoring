@@ -1,13 +1,15 @@
 namespace WebApiData {
 
-    export type RowsParameter = {
+    export interface Parameter {
         heatName: string;
+    }
+
+    export interface RowsParameter extends Parameter {
         row1?: number;
         row2?: number;
     }
 
-    export type GatesParameter = {
-        heatName: string;
+    export interface GatesParameter extends Parameter {
         num1?: number;
         num2?: number;
     }
@@ -26,7 +28,7 @@ namespace WebApiData {
     export type Runner = {
         row: number;
         bib: string;
-        heat: string;
+        tag: string;
         locked: string;
     };
 

@@ -14,11 +14,11 @@ export default function DatasetAppBar() {
     const { error, loading, dataset, loadDataset } = useData();
     return (
         <Box className="AppBar">
-            <AppBar position="static" color={error ? 'error' : 'primary'}>
+            <AppBar position="static" color={error ? 'secondary' : 'primary'}>
                 <Toolbar>
                     <KayakingIcon fontSize="large" />
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1, }}>
-                        {dataset.sheetName}
+                        {dataset.heatName}
                     </Typography>
                     {loading ?
                         <Box color="gray.500" width="51px" height="51px" display="flex" justifyContent="center" alignItems="center">

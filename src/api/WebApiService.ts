@@ -3,14 +3,20 @@ import WebApiData from '../dao/WebApiData';
 import CanoeSlalomHeatService from './CanoeSlalomHeatService';
 
 namespace WebApiService {
+
     export interface PostParameter {
         operationId: string;
         operationData: any;
     }
 
+    export function addHeat(operationData: WebApiData.Parameter) {
+        CanoeSlalomHeatService.createNewSheet(operationData.heatName);
+        return 'ok';
+    }
+    
     export function getHeatsAll(operationData: any) {
         const heats: WebApiData.Heat[] = [];
-        const names = CanoeSlalomHeatService.getSheetNameList();
+        const names = CanoeSlalomHeatService.getHeatNameList();
         names.forEach(heatName => {
             heats.push({ heatName });
         });
@@ -20,7 +26,7 @@ namespace WebApiService {
     export function getRecords(operationData: WebApiData.RowsParameter) {
         const records: WebApiData.Record[] = [];
         const criteria: CanoeSlalomHeatService.Criteria = {
-            sheetName: operationData.heatName,
+            heatName: operationData.heatName,
             started: true,
             finished: true,
             gates: {
@@ -40,7 +46,7 @@ namespace WebApiService {
                 time: '',
             };
             if (run.started) {
-                started.judge = run.started.judge.toLowerCase();
+                started.judge = run.started.judge;
                 started.time = run.started.seconds === 0 ? '' : String(run.started.seconds);
             }
             const finished: WebApiData.Finished = {
@@ -48,7 +54,7 @@ namespace WebApiService {
                 time: '',
             };
             if (run.finished) {
-                finished.judge = run.finished.judge.toLowerCase();
+                finished.judge = run.finished.judge;
                 finished.time = run.finished.seconds === 0 ? '' : String(run.finished.seconds);
             }
             const gates: WebApiData.Gate[] = [];
@@ -64,7 +70,7 @@ namespace WebApiService {
                 runner: {
                     row: run.runner.row,
                     bib: run.runner.bib,
-                    heat: run.runner.heat,
+                    tag: run.runner.tag,
                     locked: run.runner.locked ? run.runner.locked : '',
                 },
                 started,

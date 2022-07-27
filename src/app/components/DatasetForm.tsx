@@ -66,7 +66,7 @@ export default function DatasetForm() {
                     alignItems="center"
                     textAlign="center">
                     <Stack direction="column" spacing={1}>
-                        <h1>[{run.runner.bib}] {run.runner.heat}</h1>
+                        <h1>[{run.runner.bib}] {run.runner.tag}</h1>
                         {startedTimes(run.started).map(time => {
                             return <MuiTimeInput key={`${run.runner.row}-START`}
                                 row={run.runner.row} startOrFinish={'START'}

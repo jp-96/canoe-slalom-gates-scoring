@@ -47,16 +47,17 @@ namespace CanoeSlalomHeatService {
         export const GATE_COLUMN = 12;
     }
 
-    export function createNewSheet(sheetName: string) {
-        const spread = SpreadsheetApp.getActiveSpreadsheet()
-        const sheet = spread.insertSheet(`heat:${sheetName}`, spread.getSheets().length);
+    export function createNewSheet(heatName: string) {
+        const spread = SpreadsheetApp.getActiveSpreadsheet();
+        const sheetName = `heat:${heatName}`
+        const sheet = spread.insertSheet(sheetName, spread.getSheets().length);
         // 選手データ
         sheet.getRange(CONSTS.DATA_HEADER_ROW1, CONSTS.RUNNER_COLUMN).setValue('RUNNER');
         sheet.getRange(CONSTS.DATA_HEADER_ROW2, CONSTS.RUNNER_COLUMN, 1, CONSTS.RUNNER_LENGTH).setValues([
             [
                 'bib',
-                'heat',
-                'isLocked',
+                'tag',
+                'locked',
             ]
         ]);
         // スタートタイム
@@ -94,9 +95,9 @@ namespace CanoeSlalomHeatService {
      */
     export type Criteria = {
         /**
-         * シート名
+         * ヒート名（シート名）
          */
-        sheetName: string;
+        heatName: string;
         /**
          * スタートタイムの要求
          */
@@ -122,18 +123,19 @@ namespace CanoeSlalomHeatService {
 
     /**
      * スプレッドシートの取得
-     * @param sheetName シート名
+     * @param heatName ヒート名
      * @returns スプレッドシート
      */
-    function getSheet(sheetName: string) {
-        const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(`heat:${sheetName}`);
+    function getSheetByHeatName(heatName: string) {
+        const sheetName = `heat:${heatName}`;
+        const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
         if (!sheet) {
             throw new Error(`Missing sheet: '${sheetName}'`);
         }
         return sheet;
     }
     
-    export function getSheetNameList() {
+    export function getHeatNameList() {
         const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
         const r: string[] = [];
         sheets.forEach(v=>{
@@ -164,10 +166,10 @@ namespace CanoeSlalomHeatService {
      * @returns データセット
      */
     export function getDataset(criteria: Criteria) {
-        const sheet = getSheet(criteria.sheetName);
+        const sheet = getSheetByHeatName(criteria.heatName);
         const rowCount = getRowCount(sheet);
         const dataset: CanoeSlalomHeatData.Dataset = {
-            sheetName: criteria.sheetName,
+            heatName: criteria.heatName,
             runs: [],
         };
         const rsLocked: boolean[] = []; // isLockedの一時リスト
@@ -179,7 +181,7 @@ namespace CanoeSlalomHeatService {
                 const runner: CanoeSlalomHeatData.runner = {
                     row: i,
                     bib: String(r[0]),
-                    heat: String(r[1]),
+                    tag: String(r[1]),
                 };
                 const run: CanoeSlalomHeatData.run = {
                     runner,
@@ -283,7 +285,7 @@ namespace CanoeSlalomHeatService {
     }
 
     export function putData(data: CanoeSlalomHeatData.Data) {
-        const sheet = getSheet(data.sheetName);
+        const sheet = getSheetByHeatName(data.heatName);
         const rowCount = getRowCount(sheet);
         const row = data.runner.row;
         const sheetRow = CONSTS.DATA_TOP_ROW + row;
@@ -291,7 +293,7 @@ namespace CanoeSlalomHeatService {
             throw new Error('Invalid row: ${row}');
         }
         const draftData: CanoeSlalomHeatData.Data = {
-            sheetName: data.sheetName,
+            heatName: data.heatName,
             runner: { ...data.runner },
         };
         const draftSystem: CanoeSlalomHeatData.system = { fetching: {} };
@@ -299,11 +301,11 @@ namespace CanoeSlalomHeatService {
             // 選手データの確認（データロック、楽観的ロック）
             const r = sheet.getRange(sheetRow, CONSTS.RUNNER_COLUMN, 1, CONSTS.RUNNER_LENGTH).getValues()[0];
             const bib = String(r[0]);
-            const heat = String(r[1]);
+            const tag = String(r[1]);
             const isLocked = String(r[2]) != '';
-            if ((draft.runner.bib != bib) || (draft.runner.heat != heat)) {
+            if ((draft.runner.bib != bib) || (draft.runner.tag != tag)) {
                 draft.runner.bib = bib;
-                draft.runner.heat = heat;
+                draft.runner.tag = tag;
                 draftSystem.fetching.isFailure = true;
             }
             if (isLocked) {

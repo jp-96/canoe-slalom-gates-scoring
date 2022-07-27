@@ -58,13 +58,15 @@ function JudgeButton({ startOrFinish, judge, isError = false, isFailure = false,
     const onSelectedStarted = () => onSelected('STARTED');
     const onSelectedDns = () => onSelected('DNS');
     const onSelectedFinished = () => onSelected('FINISHED');
+    const onSelectedFinished50 = () => onSelected('FINISHED_50');
     const onSelectedDnf = () => onSelected('DNF');
+    const onSelectedDsq = () => onSelected('DSQ');
 
     const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
     const sx = {
-        width: "44px",
-        height: "42px",
-        fontSize: "1.2rem",
+        width: '64px',
+        height: '42px',
+        fontSize: '1.2rem',
     };
     const sxLeft = {
         ...sx,
@@ -82,22 +84,28 @@ function JudgeButton({ startOrFinish, judge, isError = false, isFailure = false,
     };
 
     const StartedButton = () => (
-        <Button variant={judge === 'STARTED' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxLeft} onClick={onSelectedStarted}>Ent</Button>
+        <Button variant={judge === 'STARTED' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={{ ...sxLeft, width: '127px', }} onClick={onSelectedStarted}>ENT</Button>
     );
     const FinishedButton = () => (
-        <Button variant={judge === 'FINISHED' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxLeft} onClick={onSelectedFinished}>Ent</Button>
+        <Button variant={judge === 'FINISHED' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxLeft} onClick={onSelectedFinished}>ENT</Button>
+    );
+    const Finished50Button = () => (
+        <Button variant={judge === 'FINISHED_50' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxMiddle} onClick={onSelectedFinished50}>+50</Button>
     );
     const DnsButton = () => (
-        <Button variant={judge === 'DNS' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxRight} onClick={onSelectedDns}>DnS</Button>
+        <Button variant={judge === 'DNS' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxMiddle} onClick={onSelectedDns}>DNS</Button>
     );
     const DnfButton = () => (
-        <Button variant={judge === 'DNF' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxRight} onClick={onSelectedDnf}>DnF</Button>
+        <Button variant={judge === 'DNF' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxMiddle} onClick={onSelectedDnf}>DNF</Button>
+    );
+    const DsqButton = () => (
+        <Button variant={judge === 'DSQ' ? 'contained' : 'outlined'} disabled={isLocked} color={color} sx={sxRight} onClick={onSelectedDsq}>DSQ</Button>
     );
 
     return (
         <Stack spacing={'-1px'} direction="row" sx={{ m: '0px' }}>
-            {startOrFinish === 'START' ? (<StartedButton />) : (<FinishedButton />)}
-            {startOrFinish === 'START' ? (<DnsButton />) : (<DnfButton />)}
+            {startOrFinish === 'START' ? (<StartedButton />) : (<><FinishedButton /><Finished50Button /></>)}
+            {startOrFinish === 'START' ? (<><DnsButton /><DsqButton /></>) : (<><DnfButton /><DsqButton /></>)}
         </Stack>
     );
 }
@@ -123,8 +131,10 @@ export default function MuiTimeInput({ row, startOrFinish, seconds, judge, isErr
     return (
         <Stack direction="row" spacing={1} sx={{ m: '0px' }}>
             <TimeLabel startOrFinish={startOrFinish} isLocked={isLocked} />
-            <TimeInput seconds={seconds} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onChanged={onChangedTime} />
-            <JudgeButton startOrFinish={startOrFinish} judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onSelected={onSelectedJudge} />
+            <Stack direction="column" spacing={1} sx={{ m: '0px' }}>
+                <TimeInput seconds={seconds} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onChanged={onChangedTime} />
+                <JudgeButton startOrFinish={startOrFinish} judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onSelected={onSelectedJudge} />
+            </Stack>
         </Stack>
     );
 }

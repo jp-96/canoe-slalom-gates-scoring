@@ -13,7 +13,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     let dataset: CanoeSlalomHeatData.Dataset;
 
     criteria = {
-        sheetName: UT_TEST_SHEET_NAME,
+        heatName: UT_TEST_SHEET_NAME,
         started: true,
         finished: true,
         gates: {
@@ -26,7 +26,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     Logger.log(dataset);
 
     criteria = {
-        sheetName: UT_TEST_SHEET_NAME,
+        heatName: UT_TEST_SHEET_NAME,
         started: true,
         finished: true,
     }
@@ -35,7 +35,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     Logger.log(dataset);
 
     criteria = {
-        sheetName: UT_TEST_SHEET_NAME,
+        heatName: UT_TEST_SHEET_NAME,
         started: true,
     }
     dataset = CanoeSlalomHeatService.getDataset(criteria);
@@ -43,7 +43,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     Logger.log(dataset);
 
     criteria = {
-        sheetName: UT_TEST_SHEET_NAME,
+        heatName: UT_TEST_SHEET_NAME,
         finished: true,
     }
     dataset = CanoeSlalomHeatService.getDataset(criteria);
@@ -51,7 +51,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     Logger.log(dataset);
 
     criteria = {
-        sheetName: UT_TEST_SHEET_NAME,
+        heatName: UT_TEST_SHEET_NAME,
         gates: {
             beginGate: 1,
             gateLength: 1,
@@ -62,7 +62,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     Logger.log(dataset);
 
     criteria = {
-        sheetName: UT_TEST_SHEET_NAME,
+        heatName: UT_TEST_SHEET_NAME,
         gates: {
             beginGate: 30,
             gateLength: 1,
@@ -73,7 +73,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
     Logger.log(dataset);
 
     criteria = {
-        sheetName: UT_TEST_SHEET_NAME,
+        heatName: UT_TEST_SHEET_NAME,
         gates: {
             beginGate: 13,
             gateLength: 5,
@@ -87,7 +87,7 @@ function test_GetDataset_CanoeSlalomHeatService() {
 
 function test_PutDataSingle_CanoeSlalomHeatService() {
     const criteria: CanoeSlalomHeatService.Criteria = {
-        sheetName: UT_TEST_SHEET_NAME,
+        heatName: UT_TEST_SHEET_NAME,
         gates: {
             beginGate: 1,
             gateLength: 30,
@@ -113,18 +113,17 @@ function test_PutDataSingle_CanoeSlalomHeatService() {
         modGate = {
             num: gate.num,
             judge: '0',
-            direction: 'FREE', // dummy
             fetching: {},
         }
 
         modRunner = {
             row: runner.row,
             bib: runner.bib,
-            heat: runner.heat,
+            tag: runner.tag,
         }
 
         modData = {
-            sheetName: dataset.sheetName,
+            heatName: dataset.heatName,
             runner: modRunner,
             gate: modGate,
         };
@@ -134,9 +133,9 @@ function test_PutDataSingle_CanoeSlalomHeatService() {
 }
 
 function test_PutData_CanoeSlalomHeatService() {
-    const sheetName = UT_TEST_SHEET_NAME;
+    const heatName = UT_TEST_SHEET_NAME;
     const criteria: CanoeSlalomHeatService.Criteria = {
-        sheetName,
+        heatName,
         gates: {
             beginGate: 1,
             gateLength: 30,
@@ -156,7 +155,7 @@ function test_PutData_CanoeSlalomHeatService() {
                 fetching: {}
             };
             const data: CanoeSlalomHeatData.Data = {
-                sheetName,
+                heatName,
                 runner,
                 gate,
             }

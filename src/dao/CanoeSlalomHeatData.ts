@@ -33,6 +33,12 @@ namespace CanoeSlalomHeatData {
         export type judgeFinished = 'FINISHED';
 
         /**
+         * 判定 - ゴール済 (ゴールタイム) - 50ペナルティー付き(チームレース15秒ルール)
+         */
+        export const JUDGE_FINISHED_50 = 'FINISHED_50';
+        export type judgeFinished50 = 'FINISHED_50';
+
+        /**
          * 判定 - ペナルティ0（ゲート判定）
          */
         export const JUDGE_P0 = '0';
@@ -88,9 +94,9 @@ namespace CanoeSlalomHeatData {
      */
     export type Data = {
         /**
-         * スプレッドシートのシート名
+         * ヒート名（シート名）
          */
-        sheetName: string;
+        heatName: string;
         /**
          * 選手データ
          */
@@ -114,9 +120,9 @@ namespace CanoeSlalomHeatData {
      */
     export type Dataset = {
         /**
-         * スプレッドシートのシート名
+         * スプレッドシートのヒート名
          */
-        sheetName: string;
+        heatName: string;
         /**
          * 選手・タイム・ペナルティのレコードセット
          */
@@ -158,9 +164,9 @@ namespace CanoeSlalomHeatData {
          */
         bib: string;
         /**
-         * レース名
+         * 識別情報 - ヒート、カテゴリ、チーム名、選手名等
          */
-        heat: string;
+        tag: string;
         /**
          * 行ロック情報
          */
@@ -195,8 +201,8 @@ namespace CanoeSlalomHeatData {
             case CONSTS.JUDGE_STARTED:
                 return CONSTS.JUDGE_STARTED;
                 break;
-            case CONSTS.JUDGE_DNS:
-                return CONSTS.JUDGE_DNS;
+            case CONSTS.JUDGE_DSQ:
+                return CONSTS.JUDGE_DSQ;
                 break;
             default:
                 throw new Error(`Invalid StartedTime judge: '${value}'`);
@@ -214,7 +220,7 @@ namespace CanoeSlalomHeatData {
         judge: finishedTimeJudge;
     } & time
 
-    type finishedTimeJudge = CONSTS.judgeNone | CONSTS.judgeDnf | CONSTS.judgeFinished | CONSTS.judgeDsq;
+    type finishedTimeJudge = CONSTS.judgeNone | CONSTS.judgeDnf | CONSTS.judgeFinished | CONSTS.judgeFinished50 | CONSTS.judgeDsq;
 
     /**
      * ゴールタイム判定の検証と変換
@@ -231,6 +237,9 @@ namespace CanoeSlalomHeatData {
                 break;
             case CONSTS.JUDGE_FINISHED:
                 return CONSTS.JUDGE_FINISHED;
+                break;
+            case CONSTS.JUDGE_FINISHED_50:
+                return CONSTS.JUDGE_FINISHED_50;
                 break;
             case CONSTS.JUDGE_DSQ:
                 return CONSTS.JUDGE_DSQ;
@@ -301,7 +310,7 @@ namespace CanoeSlalomHeatData {
         /**
          * 進行方向
          */
-        direction: gateType;
+        direction?: gateType;
         /**
          * ゲート判定
          */

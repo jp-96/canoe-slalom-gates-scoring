@@ -62,7 +62,7 @@ function reducer(draft: CanoeSlalomHeatData.Dataset, action: action) {
             // ロード完了 - データセットの取得完了
             ((action: actionDatasetLoaded) => {
                 // draftへ全てコピー
-                draft.sheetName = action.payload.sheetName;
+                draft.heatName = action.payload.heatName;
                 draft.runs = action.payload.runs;
             })(action);
             break;
@@ -146,7 +146,7 @@ function reducer(draft: CanoeSlalomHeatData.Dataset, action: action) {
                     }
                     if (isLocked) {
                         run.runner.bib = action.payload.runner.bib;
-                        run.runner.heat = action.payload.runner.heat;
+                        run.runner.tag = action.payload.runner.tag;
                     }
                 }
             })(action);
@@ -207,15 +207,15 @@ const useDataset = (initialDataset: CanoeSlalomHeatData.Dataset, criteria: Canoe
             .finally(() => setLoading(false));
     }
     const getDataAttrs = (row: number) => {
-        const sheetName = dataset.sheetName;
+        const heatName = dataset.heatName;
         let bib = '';
-        let heat = '';
+        let tag = '';
         const runs = dataset.runs.filter(run => run.runner.row == row);
         if (runs.length > 0) {
             bib = runs[0].runner.bib;
-            heat = runs[0].runner.heat;
+            tag = runs[0].runner.tag;
         }
-        return { sheetName, bib, heat, fetching: {}, }
+        return { heatName, bib, tag, fetching: {}, }
     }
     const dispatchUpdated = (data: CanoeSlalomHeatData.Data) => {
         dispatch({
@@ -245,13 +245,13 @@ const useDataset = (initialDataset: CanoeSlalomHeatData.Dataset, criteria: Canoe
         });
     };
     const setStartedTime = (row: number, seconds: number, judge: any) => {
-        const { sheetName, bib, heat, fetching } = getDataAttrs(row);
+        const { heatName, bib, tag, fetching } = getDataAttrs(row);
         const data: CanoeSlalomHeatData.Data = {
-            sheetName,
+            heatName,
             runner: {
                 row,
                 bib,
-                heat,
+                tag,
             },
             started: {
                 seconds,
@@ -262,13 +262,13 @@ const useDataset = (initialDataset: CanoeSlalomHeatData.Dataset, criteria: Canoe
         dispatchChanged(data);
     }
     const setFinishedTime = (row: number, seconds: number, judge: any) => {
-        const { sheetName, bib, heat, fetching } = getDataAttrs(row);
+        const { heatName, bib, tag, fetching } = getDataAttrs(row);
         const data: CanoeSlalomHeatData.Data = {
-            sheetName,
+            heatName,
             runner: {
                 row,
                 bib,
-                heat,
+                tag,
             },
             finished: {
                 seconds,
@@ -279,18 +279,17 @@ const useDataset = (initialDataset: CanoeSlalomHeatData.Dataset, criteria: Canoe
         dispatchChanged(data);
     }
     const setGateJudge = (row: number, num: number, judge: any) => {
-        const { sheetName, bib, heat, fetching } = getDataAttrs(row);
+        const { heatName, bib, tag, fetching } = getDataAttrs(row);
         const data: CanoeSlalomHeatData.Data = {
-            sheetName,
+            heatName,
             runner: {
                 row,
                 bib,
-                heat,
+                tag,
             },
             gate: {
                 num,
                 judge,
-                direction: 'FREE',  // dummy
                 fetching,
             }
         }
@@ -337,7 +336,7 @@ type CanoeSlalomHeatDataContextType = {
 
 const defaultValue: CanoeSlalomHeatDataContextType = {
     dataset: {
-        sheetName: '',
+        heatName: '',
         runs: [],
     },
     loading: false,
@@ -354,7 +353,7 @@ export const useData = () => useContext(CanoeSlalomHeatDataContext);
 export default function CanoeSlalomHeatDataProvider({ children }) {
     const { data } = usePushedData<AppConfig.AppConfig>();
     const criteria: CanoeSlalomHeatService.Criteria = {
-        sheetName: data.sheetName,
+        heatName: data.heatName,
     }
     if (data.gateLength > 0) {
         criteria.gates = {
@@ -368,7 +367,7 @@ export default function CanoeSlalomHeatDataProvider({ children }) {
     if (data.finish > 0) {
         criteria.finished = true;
     }
-    const providerValue = useDataset({ ...defaultValue.dataset, sheetName: data.sheetName, }, criteria)
+    const providerValue = useDataset({ ...defaultValue.dataset, heatName: data.heatName, }, criteria)
     return (
         <CanoeSlalomHeatDataContext.Provider value={providerValue}>
             {children}
