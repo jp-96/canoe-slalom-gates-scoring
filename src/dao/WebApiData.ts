@@ -1,3 +1,5 @@
+import CanoeSlalomHeatData from './CanoeSlalomHeatData';
+
 namespace WebApiData {
 
     export interface Parameter {
@@ -14,9 +16,22 @@ namespace WebApiData {
         num2?: number;
     }
 
+    export interface GateSettingsParameter extends Parameter {
+        geteSettings: GateSetting[];
+    }
+
+    export interface RunnersParameter extends Parameter {
+        runners: Runner[];
+    }
+
     export type Heat = {
         heatName: string;
     };
+
+    export type GateSetting = {
+        num: number;
+        direction: CanoeSlalomHeatData.gateType;
+    }
 
     export type Record = {
         runner: Runner;

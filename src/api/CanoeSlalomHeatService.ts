@@ -90,6 +90,42 @@ namespace CanoeSlalomHeatService {
         return sheet;
     }
 
+    export function putGateSettings(heatName: string, gateSettings: CanoeSlalomHeatData.gateSetting[]) {
+        const sheet = getSheetByHeatName(heatName);
+        // 検証
+        gateSettings.forEach(setting => {
+            CanoeSlalomHeatData.validateGateNum(setting.num);
+        });
+        // 設定
+        const range = sheet.getRange(CONSTS.DATA_HEADER_ROW2, CONSTS.GATE_COLUMN, 1, CanoeSlalomHeatData.CONSTS.GATE_MAX);
+        const gateTypes = CanoeSlalomHeatData.convGateTypeList(range.getValues()[0]);
+        gateSettings.forEach(setting => {
+            gateTypes[(setting.num - 1)] = CanoeSlalomHeatData.convGateType(setting.direction);
+        });
+        range.setValues([CanoeSlalomHeatData.toStringGateTypeList(gateTypes)]);
+    }
+
+    export function putRunners(heatName: string, runners: CanoeSlalomHeatData.runner[]) {
+        const sheet = getSheetByHeatName(heatName);
+        // 検証
+        runners.forEach(runner => {
+            if (runner.row < 0) {
+                throw new Error(`Invalid row: ${runner.row}`);
+            }
+        });
+        // 設定
+        runners.forEach(runner => {
+            const sheetRow = CONSTS.DATA_TOP_ROW + runner.row;
+            const range = sheet.getRange(sheetRow, CONSTS.RUNNER_COLUMN, 1, CONSTS.RUNNER_LENGTH);
+            const values = [
+                runner.bib,
+                runner.tag,
+                runner.locked ? runner.locked : '',
+            ];
+            range.setValues([values]);
+        });
+    }
+
     /**
      * データセット取得条件
      */
@@ -134,11 +170,11 @@ namespace CanoeSlalomHeatService {
         }
         return sheet;
     }
-    
+
     export function getHeatNameList() {
         const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
         const r: string[] = [];
-        sheets.forEach(v=>{
+        sheets.forEach(v => {
             const sheetName = v.getSheetName();
             if (sheetName.startsWith('heat:')) {
                 r.push(sheetName.substring(5));
@@ -290,7 +326,7 @@ namespace CanoeSlalomHeatService {
         const row = data.runner.row;
         const sheetRow = CONSTS.DATA_TOP_ROW + row;
         if (row >= rowCount) {
-            throw new Error('Invalid row: ${row}');
+            throw new Error(`Invalid row: ${row}`);
         }
         const draftData: CanoeSlalomHeatData.Data = {
             heatName: data.heatName,
