@@ -14,7 +14,7 @@ export default function DatasetForm() {
         return (
             <>
                 <h1>Error</h1>
-                <code>{JSON.stringify(error, null, 2)}</code>
+                <code>The URL is incorrect.</code>
             </>
         );
     }
