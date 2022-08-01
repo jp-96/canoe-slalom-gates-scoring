@@ -20,7 +20,7 @@ function TimeLabel({ startOrFinish, isLocked = false }) {
         color: isLocked ? grey[400] : blue[700],
         userSelect: 'none',
     };
-    const caption = startOrFinish === 'START' ? 'ST' : 'GL'
+    const caption = startOrFinish === 'START' ? 'S' : 'F'
     return (
         <Typography variant="caption" sx={sx} align="center">
             {caption}

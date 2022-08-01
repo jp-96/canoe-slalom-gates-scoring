@@ -4,23 +4,35 @@ import WebApiService from './api/WebApiService';
 import CanoeSlalomHeatData from './dao/CanoeSlalomHeatData';
 import AppConfig from './api/AppConfig';
 
-function doGet(e: GoogleAppsScript.Events.DoGet) {
-    Logger.log(e);
-    const u = parsePathInfo_(e);
-    Logger.log(u);
+/**
+https://script.google.com/.../exec?h=テストデータ&g=1&n=5
 
-    const webApp = () => {
-        const p = e.parameter;
-        const appConfig = AppConfig.buildAppConfig(p.sheetName, p.beginGate, p.gateLength, p.start, p.finish);
+クエリーパラメーター
+    h, heatName : ヒート名（シート名）
+    g, beginGate : 最初のゲート (=1..30)
+    n, gateLength : ゲート数 (=1..)
+    s, start : スタート (=1)
+    f, finish : ゴール (=1)
+
+ */
+function doGet(e: GoogleAppsScript.Events.DoGet) {
+    // 認証ページへ遷移してしまうため、path(pathInfo)を設定しないこと。
+    const webApp = (appConfig: AppConfig.AppConfig) => {
         const template = HtmlTemplateDataSetter.createTemplateFromFile("index", appConfig);
         return template
             .evaluate()
             .addMetaTag("viewport", "width=device-width, initial-scale=1.0")
             .setTitle("Canoe Slalom Scoring App.");
     };
-
-    // アプリ
-    return webApp();
+    const p = e.parameter;
+    const appConfig = AppConfig.buildAppConfig(
+        p.h ? p.h : p.heatName,
+        p.g ? p.g : p.beginGate,
+        p.n ? p.n : p.gateLength,
+        p.s ? p.s : p.start,
+        p.f ? p.f : p.finish
+    );
+    return webApp(appConfig);
 }
 
 /**
@@ -30,11 +42,15 @@ curl -i -d '{"operationId":"getHeatsAll", "operationData":{}}' \
   -H "Content-Type: application/json"
 */
 function doPost(e: GoogleAppsScript.Events.DoPost) {
-    // curl等からアクセスすると認証ページへ遷移してしまうため、path(pathInfo)を設定しないこと。
-    Logger.log(e);
+    // 認証ページへ遷移してしまうため、path(pathInfo)を設定しないこと。
+    const createJsonResponse = (json: any) => {
+        return ContentService
+            .createTextOutput(JSON.stringify(json))
+            .setMimeType(ContentService.MimeType.JSON);
+    }
     const p: WebApiService.PostParameter = JSON.parse(e.postData.contents);
     const result = WebApiService[p.operationId](p.operationData);
-    return createJsonResponse_({ result });
+    return createJsonResponse({ result });
 }
 
 function getDataset(criteria: CanoeSlalomHeatService.Criteria) {
@@ -45,34 +61,4 @@ function getDataset(criteria: CanoeSlalomHeatService.Criteria) {
 function putData(data: CanoeSlalomHeatData.Data) {
     Logger.log(data);
     return CanoeSlalomHeatService.putData(data);
-}
-
-function parsePathInfo_(e: any /** GoogleAppsScript.Events.DoGet */) {
-    const paths: string[] = [];
-    const values: any = {};
-    const r = {
-        paths,
-        values,
-    };
-    if (e.pathInfo) {
-        const p = e.pathInfo.split('/');
-        let key: string = '';
-        for (let i = 0; i < p.length; i++) {
-            if ((i % 2) > 0) {
-                // value
-                r.values[key] = decodeURIComponent(p[i]);
-            } else {
-                key = decodeURIComponent(p[i]);
-                r.paths.push(key);
-                r.values[key] = null;
-            }
-        }
-    }
-    return r;
-}
-
-function createJsonResponse_(json: any) {
-    return ContentService
-        .createTextOutput(JSON.stringify(json))
-        .setMimeType(ContentService.MimeType.JSON);
 }
