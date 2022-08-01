@@ -205,7 +205,7 @@ namespace CanoeSlalomHeatData {
                 return CONSTS.JUDGE_DSQ;
                 break;
             default:
-                throw new Error(`Invalid StartedTime judge: '${value}'`);
+                throw new Error(`Invalid StartedTime judge: ${value}`);
                 break;
         }
     }
@@ -245,7 +245,7 @@ namespace CanoeSlalomHeatData {
                 return CONSTS.JUDGE_DSQ;
                 break;
             default:
-                throw new Error(`Invalid FinishedTime judge: '${value}'`);
+                throw new Error(`Invalid FinishedTime judge: ${value}`);
                 break;
         }
     }
@@ -300,6 +300,20 @@ namespace CanoeSlalomHeatData {
     }
 
     /**
+     * ゲート設定
+     */
+    export type gateSetting = {
+        /**
+         * <<PK>> ゲート番号(1～30)
+         */
+        num: number;
+        /**
+         * 進行方向
+         */
+        direction?: gateType;
+    }
+
+    /**
      * ゲート判定
      */
     export type gate = {
@@ -316,7 +330,7 @@ namespace CanoeSlalomHeatData {
          */
         judge: gateJudge;
     } & system;
-    type gateType = CONSTS.gateDownstream | CONSTS.gateUpstream | CONSTS.gateFree;
+    export type gateType = CONSTS.gateDownstream | CONSTS.gateUpstream | CONSTS.gateFree;
     type gateJudge = CONSTS.judgeNone | CONSTS.judgeP0 | CONSTS.judgeP2 | CONSTS.judgeP50 | CONSTS.judgeDsq;
 
     /**
@@ -327,7 +341,7 @@ namespace CanoeSlalomHeatData {
     export function validateGateNum(value: any): number {
         const num = Number(value);
         if ((num < 1) || (num > CONSTS.GATE_MAX)) {
-            throw new Error(`Invalid Gate num: '${value}' [1-${CONSTS.GATE_MAX}]`);
+            throw new Error(`Invalid Gate num: ${value} [1-${CONSTS.GATE_MAX}]`);
         }
         return num;
     }
@@ -337,10 +351,10 @@ namespace CanoeSlalomHeatData {
      * @param values 変換する値のリスト
      * @returns ゲートタイプのリスト
      */
-    export function convGateTypeList(values: any[]) {
-        const gateTypes: gateType[] = [];
-        const convGateType = value => {
-            switch (String(value).toUpperCase()) {
+    export function toStringGateTypeList(gateTypes: gateType[]) {
+        const ret: any[] = [];
+        const toStringGateType = (value: gateType) => {
+            switch (value) {
                 case CONSTS.GATE_FREE:
                     return CONSTS.GATE_FREE;
                     break;
@@ -348,16 +362,47 @@ namespace CanoeSlalomHeatData {
                     return CONSTS.GATE_UPSTREAM;
                     break;
                 default:
-                    return CONSTS.GATE_DOWNSTREAM;
+                    return '';
                     break;
             }
         };
+        gateTypes.forEach(v => {
+            ret.push(toStringGateType(v));
+        });
+        return ret;
+    }
+
+    /**
+     * ゲートタイプへの変換
+     * @param values 変換する値のリスト
+     * @returns ゲートタイプのリスト
+     */
+    export function convGateTypeList(values: any[]) {
+        const gateTypes: gateType[] = [];
         values.forEach(v => {
             gateTypes.push(convGateType(v));
         });
         return gateTypes;
     }
 
+    /**
+     * ゲートタイプへの変換
+     * @param value 変換する値
+     * @returns ゲートタイプ
+     */
+    export function convGateType(value: any) {
+        switch (String(value).toUpperCase()) {
+            case CONSTS.GATE_FREE:
+                return CONSTS.GATE_FREE;
+                break;
+            case CONSTS.GATE_UPSTREAM:
+                return CONSTS.GATE_UPSTREAM;
+                break;
+            default:
+                return CONSTS.GATE_DOWNSTREAM;
+                break;
+        }
+    };
     /**
      * ゲート判定の検証と変換
      * @param value 検証する値
@@ -381,7 +426,7 @@ namespace CanoeSlalomHeatData {
                 return CONSTS.JUDGE_DSQ;
                 break;
             default:
-                throw new Error(`Invalid Gate judge: '${value}'`);
+                throw new Error(`Invalid Gate judge: ${value}`);
                 break;
         }
     }

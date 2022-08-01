@@ -13,7 +13,7 @@ namespace WebApiService {
         CanoeSlalomHeatService.createNewSheet(operationData.heatName);
         return 'ok';
     }
-    
+
     export function getHeatsAll(operationData: any) {
         const heats: WebApiData.Heat[] = [];
         const names = CanoeSlalomHeatService.getHeatNameList();
@@ -21,6 +21,18 @@ namespace WebApiService {
             heats.push({ heatName });
         });
         return heats;
+    }
+
+    export function putGateSettings(operationData: WebApiData.GateSettingsParameter) {
+        const heatName = operationData.heatName;
+        CanoeSlalomHeatService.putGateSettings(heatName, operationData.geteSettings);
+        return 'ok';
+    }
+
+    export function putRunners(operationData: WebApiData.RunnersParameter) {
+        const heatName = operationData.heatName;
+        CanoeSlalomHeatService.putRunners(heatName, operationData.runners);
+        return 'ok';
     }
 
     export function getRecords(operationData: WebApiData.RowsParameter) {
@@ -35,8 +47,8 @@ namespace WebApiService {
             },
         };
         const ds = CanoeSlalomHeatService.getDataset(criteria);
-        const rowMin = operationData.row1!==undefined ? operationData.row1 : 0;
-        const rowMax = operationData.row2!==undefined ? operationData.row2 : ds.runs.length - 1;
+        const rowMin = operationData.row1 !== undefined ? operationData.row1 : 0;
+        const rowMax = operationData.row2 !== undefined ? operationData.row2 : ds.runs.length - 1;
         ds.runs.forEach(run => {
             if ((run.runner.row < rowMin) || (run.runner.row > rowMax)) {
                 return;
