@@ -264,9 +264,9 @@ namespace CanoeSlalomHeatData {
      * 時・分・秒（小数点以下3桁）
      */
     type hms = {
-        hours: any,
-        minutes: any,
-        seconds: any,
+        hours: number,
+        minutes: number,
+        seconds: number,
     }
 
     /**

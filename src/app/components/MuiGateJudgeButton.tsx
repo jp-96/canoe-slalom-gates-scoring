@@ -32,8 +32,8 @@ function JudgeButton({ judge, isError = false, isFailure = false, isLoading = fa
 
     const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
     const sx = {
-        width: "44px",
-        height: "42px",
+        width: "64px",
+        height: "44px",
         fontSize: "1.2rem",
     };
     const sxLeft = {
