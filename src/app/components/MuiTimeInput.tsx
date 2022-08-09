@@ -3,6 +3,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import { styled, useTheme } from '@mui/material/styles';
 import NumberFormat from "react-number-format";
 import { grey, green, red, blue, } from '@mui/material/colors';
 import { useData } from "../providers/CanoeSlalomHeatDataProvider";
@@ -110,6 +111,94 @@ function JudgeButton({ startOrFinish, judge, isError = false, isFailure = false,
     );
 }
 
+function TimeField({ startOrFinish, seconds, judge, isError = false, isFailure = false, isLoading = false, isLocked = false, onChanged = f => f }) {
+
+    const hms = CanoeSlalomHeatData.secondsToHms(seconds);
+    const hhPart = hms.hours > 0 ? String(hms.hours) + ':' : '';
+    const mmPart = hhPart.length > 0 ? ('0' + String(hms.minutes)).slice(-2) + ':' : hms.minutes > 0 ? String(hms.minutes) + ':' : '';
+    const ssPart = mmPart.length > 0 ? ('0' + hms.seconds.toFixed(3)).slice(-6) : hms.seconds > 0 ? hms.seconds.toFixed(3) : '-.---';
+    const timeText = hhPart + mmPart + ssPart;
+
+    const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
+
+    let buttonVariant: ("contained" | "outlined") = 'contained';
+    let judgeText: ('ENT' | '+50' | 'DNS' | 'DNF' | 'DSQ' | '---');
+    switch (judge) {
+        case 'STARTED':
+            judgeText = 'ENT';
+            break;
+        case 'FINISHED':
+            judgeText = 'ENT';
+            break;
+        case 'FINISHED_50':
+            judgeText = '+50';
+            break;
+        case 'DNS':
+            judgeText = 'DNS';
+            break;
+        case 'DNF':
+            judgeText = 'DNF';
+            break;
+        case 'DSQ':
+            judgeText = 'DSQ';
+            break;
+        default:
+            judgeText = '---';
+            buttonVariant = 'outlined';
+            break;
+    }
+
+    const ConvColor = (color: string) => {
+        const theme = useTheme();
+        const palette: any = theme.palette;
+        return palette[color].main;
+    };
+    const colorCode = ConvColor(color);
+
+    const CssTextField = styled(TextField)({
+        '& label.Mui-focused': {
+            color: colorCode,
+        },
+        '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': {
+                borderColor: colorCode,
+                borderWidth: '1px',
+            },
+        },
+    });
+
+    const textSx = {
+        width: '186px',
+        paddingTop: '1px',
+        input: {
+            height: '40px',
+            textAlign: 'right',
+            fontSize: '1.6rem',
+            paddingLeft: '0px',
+            paddingRight: '10px',
+            paddingTop: '3px',
+            paddingBottom: '0px',
+            color: colorCode,
+        },
+    };
+    const textInputProps = {
+        readOnly: true,
+    };
+
+    const buttonSx = {
+        width: '64px',
+        height: '44px',
+        fontSize: '1.2rem',
+    };
+
+    return (
+        <Stack direction="row" spacing={"3px"} sx={{ m: '0px' }}>
+            <CssTextField sx={textSx} disabled={isLocked} focused InputProps={textInputProps} value={timeText} label="hh:mm:ss.SSS" />
+            <Button sx={buttonSx} disabled={isLocked} color={color} variant={buttonVariant} >{judgeText}</Button>
+        </Stack>
+    );
+}
+
 export default function MuiTimeInput({ row, startOrFinish, seconds, judge, isError = false, isFailure = false, isLoading = false, isLocked = false }) {
     const { setStartedTime, setFinishedTime } = useData();
     const onChangeTimeJudge = (seconds, judge) => {
@@ -129,12 +218,15 @@ export default function MuiTimeInput({ row, startOrFinish, seconds, judge, isErr
     }
 
     return (
-        <Stack direction="row" spacing={1} sx={{ m: '0px' }}>
-            <TimeLabel startOrFinish={startOrFinish} isLocked={isLocked} />
+        <>
+            <Stack direction="row" spacing={1} sx={{ m: '0px' }}>
+                <TimeLabel startOrFinish={startOrFinish} isLocked={isLocked} />
+                <TimeField startOrFinish={startOrFinish} seconds={seconds} judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} />
+            </Stack>
             <Stack direction="column" spacing={1} sx={{ m: '0px' }}>
                 <TimeInput seconds={seconds} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onChanged={onChangedTime} />
                 <JudgeButton startOrFinish={startOrFinish} judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onSelected={onSelectedJudge} />
             </Stack>
-        </Stack>
+        </>
     );
 }
