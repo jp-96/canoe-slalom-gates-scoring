@@ -69,7 +69,7 @@ export default function DatasetForm() {
                         <h1>[{run.runner.bib}] {run.runner.tag}</h1>
                         {startedTimes(run.started).map(time => {
                             return <MuiTimeInput key={`${run.runner.row}-START`}
-                                row={run.runner.row} startOrFinish={'START'}
+                                row={run.runner.row} bib={run.runner.bib} tag={run.runner.tag} startOrFinish={'START'}
                                 seconds={time.seconds} judge={time.judge}
                                 isError={time.fetching.hasError} isFailure={time.fetching.isFailure}
                                 isLoading={time.fetching.isLoading} isLocked={time.isLocked} />
@@ -80,7 +80,7 @@ export default function DatasetForm() {
                             return (
                                 <MuiGateJudgeButton
                                     key={`${run.runner.row}-${gate.num}`}
-                                    row={run.runner.row} num={gate.num} isDownStream={isDownStream}
+                                    row={run.runner.row} bib={run.runner.bib} tag={run.runner.tag} num={gate.num} isDownStream={isDownStream}
                                     judge={gate.judge}
                                     isError={gate.fetching.hasError} isFailure={gate.fetching.isFailure}
                                     isLoading={gate.fetching.isLoading} isLocked={isLocked}
@@ -89,7 +89,7 @@ export default function DatasetForm() {
                         })}
                         {finishedTimes(run.finished).map(time => {
                             return <MuiTimeInput key={`${run.runner.row}-FINISH`}
-                                row={run.runner.row} startOrFinish={'FINISH'}
+                                row={run.runner.row} bib={run.runner.bib} tag={run.runner.tag} startOrFinish={'FINISH'}
                                 seconds={time.seconds} judge={time.judge}
                                 isError={time.fetching.hasError} isFailure={time.fetching.isFailure}
                                 isLoading={time.fetching.isLoading} isLocked={time.isLocked} />

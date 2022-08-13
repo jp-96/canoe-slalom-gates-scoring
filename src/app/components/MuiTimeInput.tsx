@@ -7,6 +7,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import NumberFormat from "react-number-format";
 import { grey, green, red, blue, } from '@mui/material/colors';
 import { useData } from "../providers/CanoeSlalomHeatDataProvider";
+import MuiTimeInputDialog, { TimeJudgeData } from './MuiTimeInputDialog';
 import CanoeSlalomHeatData from '../../dao/CanoeSlalomHeatData';
 
 function TimeLabel({ startOrFinish, isLocked = false }) {
@@ -111,13 +112,34 @@ function JudgeButton({ startOrFinish, judge, isError = false, isFailure = false,
     );
 }
 
-function TimeField({ startOrFinish, seconds, judge, isError = false, isFailure = false, isLoading = false, isLocked = false, onChanged = f => f }) {
+function TimeField({ bib, tag, startOrFinish, seconds, judge, isError = false, isFailure = false, isLoading = false, isLocked = false, onChangeTimeJudge = (s, j) => { } }) {
 
     const hms = CanoeSlalomHeatData.secondsToHms(seconds);
     const hhPart = hms.hours > 0 ? String(hms.hours) + ':' : '';
     const mmPart = hhPart.length > 0 ? ('0' + String(hms.minutes)).slice(-2) + ':' : hms.minutes > 0 ? String(hms.minutes) + ':' : '';
     const ssPart = mmPart.length > 0 ? ('0' + hms.seconds.toFixed(3)).slice(-6) : hms.seconds > 0 ? hms.seconds.toFixed(3) : '-.---';
     const timeText = hhPart + mmPart + ssPart;
+
+    const [open, setOpen] = React.useState(false);
+    const timeJudgeData = {
+        hh: hms.hours,
+        mm: hms.minutes,
+        ss: hms.seconds,
+        judge,
+    };
+    const handleEdit = () => {
+        setOpen(true);
+    };
+
+    const onApply = (timeJudgeData: TimeJudgeData) => {
+        const seconds: number = (timeJudgeData.hh * 3600) + (timeJudgeData.mm * 60) + timeJudgeData.ss;
+        onChangeTimeJudge(seconds, timeJudgeData.judge);
+        setOpen(false);
+    };
+
+    const onCancel = () => {
+        setOpen(false);
+    };
 
     const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
 
@@ -192,14 +214,17 @@ function TimeField({ startOrFinish, seconds, judge, isError = false, isFailure =
     };
 
     return (
-        <Stack direction="row" spacing={"3px"} sx={{ m: '0px' }}>
-            <CssTextField sx={textSx} disabled={isLocked} focused InputProps={textInputProps} value={timeText} label="hh:mm:ss.SSS" />
-            <Button sx={buttonSx} disabled={isLocked} color={color} variant={buttonVariant} >{judgeText}</Button>
-        </Stack>
+        <>
+            <Stack direction="row" spacing={"3px"} sx={{ m: '0px' }}>
+                <CssTextField sx={textSx} disabled={isLocked} focused InputProps={textInputProps} value={timeText} label="hh:mm:ss.SSS"  onClick={handleEdit}/>
+                <Button sx={buttonSx} disabled={isLocked} color={color} variant={buttonVariant} onClick={handleEdit} >{judgeText}</Button>
+            </Stack>
+            <MuiTimeInputDialog open={open} bib={bib} tag={tag} startOrFinish={startOrFinish} timeJudgeData={timeJudgeData} onCancel={onCancel} onApply={onApply} />
+        </>
     );
 }
 
-export default function MuiTimeInput({ row, startOrFinish, seconds, judge, isError = false, isFailure = false, isLoading = false, isLocked = false }) {
+export default function MuiTimeInput({ row, bib, tag, startOrFinish, seconds, judge, isError = false, isFailure = false, isLoading = false, isLocked = false }) {
     const { setStartedTime, setFinishedTime } = useData();
     const onChangeTimeJudge = (seconds, judge) => {
         if ((!isLoading) && (!isLocked)) {
@@ -221,7 +246,7 @@ export default function MuiTimeInput({ row, startOrFinish, seconds, judge, isErr
         <>
             <Stack direction="row" spacing={1} sx={{ m: '0px' }}>
                 <TimeLabel startOrFinish={startOrFinish} isLocked={isLocked} />
-                <TimeField startOrFinish={startOrFinish} seconds={seconds} judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} />
+                <TimeField bib={bib} tag={tag} startOrFinish={startOrFinish} seconds={seconds} judge={judge} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onChangeTimeJudge={onChangeTimeJudge} />
             </Stack>
             <Stack direction="column" spacing={1} sx={{ m: '0px' }}>
                 <TimeInput seconds={seconds} isError={isError} isFailure={isFailure} isLoading={isLoading} isLocked={isLocked} onChanged={onChangedTime} />

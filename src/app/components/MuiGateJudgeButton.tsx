@@ -60,7 +60,7 @@ function JudgeButton({ judge, isError = false, isFailure = false, isLoading = fa
     );
 }
 
-export default function MuiGateJudgeButton({ row, num, judge, isDownStream = true, isError = false, isFailure = false, isLoading = false, isLocked = false }) {
+export default function MuiGateJudgeButton({ row, bib, tag, num, judge, isDownStream = true, isError = false, isFailure = false, isLoading = false, isLocked = false }) {
     const { setGateJudge } = useData();
     const onSelectedJudge = judge => {
         if ((!isLoading) && (!isLocked)) {
