@@ -177,66 +177,104 @@ function TimeCaption() {
     );
 }
 
-export default function TimeJudgeDialog(props: TimeJudgeDialogProps) {
+const isAllowed100 = (values) => {
+    const numValue = Number(values.value)
+    if (isNaN(numValue)) return true
+    return (numValue >= 0) && (numValue < 100)
+}
 
-    const [hh, setHh] = React.useState<number | undefined>(undefined);
-    const [mm, setMm] = React.useState<number | undefined>(undefined);
-    const [ss, setSs] = React.useState<number | undefined>(undefined);
-    const [judge, setJudge] = React.useState('');
+const isAllowed60 = (values) => {
+    const numValue = Number(values.value)
+    if (isNaN(numValue)) return true
+    return (numValue >= 0) && (numValue < 60)
+}
+
+const TimeHhFormat = (props: any) => {
+    return (
+        <NumberFormat
+            decimalScale={0}
+            allowNegative={false}
+            isAllowed={isAllowed100}
+            {...props}
+        />
+    );
+};
+
+const TimeMmFormat = (props: any) => {
+    return (
+        <NumberFormat
+            decimalScale={0}
+            allowNegative={false}
+            isAllowed={isAllowed60}
+            {...props}
+        />
+    );
+};
+
+const TimeSsFormat = (props: any) => {
+    return (
+        <NumberFormat
+            decimalScale={3}
+            fixedDecimalScale={true}
+            allowNegative={false}
+            isAllowed={isAllowed60}
+            {...props}
+        />
+    );
+};
+
+export default function TimeJudgeDialog(props: TimeJudgeDialogProps) {
+    let defaultHh: number | undefined = undefined;
+    let defaultMm: number | undefined = undefined;
+    let defaultSs: number | undefined = undefined;
+    const defaultJudge = props.timeJudgeData.judge;
+    if (props.timeJudgeData.hh > 0) {
+        defaultHh = props.timeJudgeData.hh;
+    }
+    if ((props.timeJudgeData.hh > 0) || (props.timeJudgeData.mm > 0)) {
+        defaultMm = props.timeJudgeData.mm;
+    }
+    if ((props.timeJudgeData.hh > 0) || (props.timeJudgeData.mm > 0) || (props.timeJudgeData.ss > 0)) {
+        defaultSs = props.timeJudgeData.ss;
+    }
+    const [hh, setHh] = React.useState<number | undefined>(defaultHh);
+    const [mm, setMm] = React.useState<number | undefined>(defaultMm);
+    const [ss, setSs] = React.useState<number | undefined>(defaultSs);
+    const [judge, setJudge] = React.useState(defaultJudge);
 
     const resetData = () => {
-        setHh(props.timeJudgeData.hh);
-        if (props.timeJudgeData.hh > 0) {
-            setHh(props.timeJudgeData.hh);
-        } else {
-            setHh(undefined);
-        }
-        if ((props.timeJudgeData.hh > 0) || (props.timeJudgeData.mm > 0)) {
-            setMm(props.timeJudgeData.mm);
-        } else {
-            setMm(undefined);
-        }
-        if ((props.timeJudgeData.hh > 0) || (props.timeJudgeData.mm > 0) || (props.timeJudgeData.ss > 0)) {
-            setSs(props.timeJudgeData.ss);
-        } else {
-            setSs(undefined);
-        }
-        setJudge(props.timeJudgeData.judge);
+        setHh(defaultHh);
+        setMm(defaultMm);
+        setSs(defaultSs);
+        setJudge(defaultJudge);
     };
 
-    React.useEffect(
-        () => {
-            resetData();
-        },
-        [props.open]
-    );
+    React.useEffect(() => {
+        resetData();
+    }, [props.open]);
 
-    const isAllowed100 = (values) => {
-        const numValue = Number(values.value)
-        if (isNaN(numValue)) return true
-        return (numValue >= 0) && (numValue < 100)
+    const onFocus = (e: any) => {
+        e.target.select();
     }
 
-    const isAllowed60 = (values) => {
-        const numValue = Number(values.value)
-        if (isNaN(numValue)) return true
-        return (numValue >= 0) && (numValue < 60)
-    }
+    const onChangeHh = (e: any) => {
+        setHh(e.target.value);
+    };
 
-    const onValueChangeHh = (v, s) => {
-        setHh(v.value);
+    const onChangeMm = (e: any) => {
+        setMm(e.target.value)
     };
-    const onValueChangeMm = (v, s) => {
-        setMm(v.value);
+
+    const onChangeSs = (e: any) => {
+        setSs(e.target.value);
     };
-    const onValueChangeSs = (v, s) => {
-        setSs(v.value);
-    };
+
     const onSelectedJudge = (judge: string) => {
         setJudge(judge);
     };
 
     const onClose = () => {
+        resetData();
         props.onCancel();
     };
 
@@ -247,6 +285,23 @@ export default function TimeJudgeDialog(props: TimeJudgeDialogProps) {
             ss: ss ? Number(ss) : 0,
             judge
         };
+
+        if (timeJudgeData.hh > 0) {
+            setHh(timeJudgeData.hh);
+        } else {
+            setHh(undefined);
+        }
+        if ((timeJudgeData.hh > 0) || (timeJudgeData.mm > 0)) {
+            setMm(timeJudgeData.mm);
+        } else {
+            setMm(undefined);
+        }
+        if ((timeJudgeData.hh > 0) || (timeJudgeData.mm > 0) || (timeJudgeData.ss > 0)) {
+            setSs(timeJudgeData.ss);
+        } else {
+            setSs(undefined);
+        }
+
         props.onApply(timeJudgeData);
     };
 
@@ -271,40 +326,41 @@ export default function TimeJudgeDialog(props: TimeJudgeDialogProps) {
                 <Stack spacing={1} direction="column">
                     <Stack spacing={1} direction="row">
                         <TimeCaption />
-                        <NumberFormat
+                        <TextField
                             value={hh}
-                            onValueChange={onValueChangeHh}
-                            customInput={TextField}
+                            onChange={onChangeHh}
                             label="hh"
                             variant="standard"
                             InputLabelProps={{ shrink: true }}
                             sx={timeSx}
-                            isAllowed={isAllowed100}
-                            allowNegative={false}
+                            InputProps={{
+                                inputComponent: TimeHhFormat
+                            }}
+                            onFocus={onFocus}
                         />
-                        <NumberFormat
+                        <TextField
                             value={mm}
-                            onValueChange={onValueChangeMm}
-                            customInput={TextField}
+                            onChange={onChangeMm}
                             label="mm"
                             variant="standard"
                             InputLabelProps={{ shrink: true }}
                             sx={timeSx}
-                            isAllowed={isAllowed60}
-                            allowNegative={false}
+                            InputProps={{
+                                inputComponent: TimeMmFormat
+                            }}
+                            onFocus={onFocus}
                         />
-                        <NumberFormat
+                        <TextField
                             value={ss}
-                            onValueChange={onValueChangeSs}
-                            customInput={TextField}
+                            onChange={onChangeSs}
                             label="ss.SS"
                             variant="standard"
                             InputLabelProps={{ shrink: true }}
                             sx={timeSsSx}
-                            isAllowed={isAllowed60}
-                            allowNegative={false}
-                            decimalScale={3}
-                            fixedDecimalScale={true}
+                            InputProps={{
+                                inputComponent: TimeSsFormat
+                            }}
+                            onFocus={onFocus}
                         />
                     </Stack>
                     <JudgeButton

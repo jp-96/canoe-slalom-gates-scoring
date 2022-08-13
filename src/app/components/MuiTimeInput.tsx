@@ -216,7 +216,7 @@ function TimeField({ bib, tag, startOrFinish, seconds, judge, isError = false, i
     return (
         <>
             <Stack direction="row" spacing={"3px"} sx={{ m: '0px' }}>
-                <CssTextField sx={textSx} disabled={isLocked} focused InputProps={textInputProps} value={timeText} label="hh:mm:ss.SSS"  onClick={handleEdit}/>
+                <CssTextField sx={textSx} disabled={isLocked} focused InputProps={textInputProps} value={timeText} label="hh:mm:ss.SSS" onClick={handleEdit} />
                 <Button sx={buttonSx} disabled={isLocked} color={color} variant={buttonVariant} onClick={handleEdit} >{judgeText}</Button>
             </Stack>
             <MuiTimeInputDialog open={open} bib={bib} tag={tag} startOrFinish={startOrFinish} timeJudgeData={timeJudgeData} onCancel={onCancel} onApply={onApply} />
