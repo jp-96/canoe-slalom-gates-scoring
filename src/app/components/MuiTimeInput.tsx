@@ -120,25 +120,39 @@ function TimeField({ bib, tag, startOrFinish, seconds, judge, isError = false, i
     const ssPart = mmPart.length > 0 ? ('0' + hms.seconds.toFixed(3)).slice(-6) : hms.seconds > 0 ? hms.seconds.toFixed(3) : '-.---';
     const timeText = hhPart + mmPart + ssPart;
 
-    const [open, setOpen] = React.useState(false);
-    const timeJudgeData = {
+    const defaultTimeJudgeData: TimeJudgeData = {
         hh: hms.hours,
         mm: hms.minutes,
         ss: hms.seconds,
         judge,
     };
+    const [timeJudgeData, setTimeJudgeData] = React.useState(defaultTimeJudgeData);
+    const [open, setOpen] = React.useState(false);
+
     const handleEdit = () => {
+        let hh: number | undefined = undefined;
+        let mm: number | undefined = undefined;
+        let ss: number | undefined = undefined;
+        const judge = timeJudgeData.judge;
+        if (hms.hours > 0) {
+            hh = hms.hours;
+        }
+        if ((hms.hours > 0) || (hms.minutes > 0)) {
+            mm = timeJudgeData.mm;
+        }
+        if ((hms.hours > 0) || (hms.minutes > 0) || (hms.seconds > 0)) {
+            ss = timeJudgeData.ss;
+        }
+        setTimeJudgeData({ hh, mm, ss, judge, });
         setOpen(true);
     };
 
-    const onApply = (timeJudgeData: TimeJudgeData) => {
-        const seconds: number = (timeJudgeData.hh * 3600) + (timeJudgeData.mm * 60) + timeJudgeData.ss;
-        onChangeTimeJudge(seconds, timeJudgeData.judge);
+    const onClose = (apply: boolean) => {
         setOpen(false);
-    };
-
-    const onCancel = () => {
-        setOpen(false);
+        if (apply) {
+            const seconds: number = (Number(timeJudgeData.hh) * 3600) + (Number(timeJudgeData.mm) * 60) + Number(timeJudgeData.ss);
+            onChangeTimeJudge(seconds, timeJudgeData.judge);
+        }
     };
 
     const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
@@ -219,7 +233,7 @@ function TimeField({ bib, tag, startOrFinish, seconds, judge, isError = false, i
                 <CssTextField sx={textSx} disabled={isLocked} focused InputProps={textInputProps} value={timeText} label="hh:mm:ss.SSS" onClick={handleEdit} />
                 <Button sx={buttonSx} disabled={isLocked} color={color} variant={buttonVariant} onClick={handleEdit} >{judgeText}</Button>
             </Stack>
-            <MuiTimeInputDialog open={open} bib={bib} tag={tag} startOrFinish={startOrFinish} timeJudgeData={timeJudgeData} onCancel={onCancel} onApply={onApply} />
+            <MuiTimeInputDialog open={open} bib={bib} tag={tag} startOrFinish={startOrFinish} timeJudgeData={timeJudgeData} onChange={setTimeJudgeData} onClose={onClose} />
         </>
     );
 }

@@ -11,10 +11,10 @@ import NumberFormat from "react-number-format";
 import { formControlLabelClasses } from "@mui/material";
 
 export type TimeJudgeData = {
-    hh: number;
-    mm: number;
-    ss: number;
-    judge: string;
+    hh: any;
+    mm: any;
+    ss: any;
+    judge: any;
 };
 
 type TimeJudgeDialogProps = {
@@ -23,8 +23,8 @@ type TimeJudgeDialogProps = {
     tag: string;
     startOrFinish: string;
     timeJudgeData: TimeJudgeData;
-    onCancel: () => void;
-    onApply: (newValue: TimeJudgeData) => void;
+    onChange: (values: TimeJudgeData) => void;
+    onClose: (apply: boolean) => void;
 };
 
 function JudgeButton({
@@ -224,86 +224,43 @@ const TimeSsFormat = (props: any) => {
 };
 
 export default function TimeJudgeDialog(props: TimeJudgeDialogProps) {
-    let defaultHh: number | undefined = undefined;
-    let defaultMm: number | undefined = undefined;
-    let defaultSs: number | undefined = undefined;
-    const defaultJudge = props.timeJudgeData.judge;
-    if (props.timeJudgeData.hh > 0) {
-        defaultHh = props.timeJudgeData.hh;
-    }
-    if ((props.timeJudgeData.hh > 0) || (props.timeJudgeData.mm > 0)) {
-        defaultMm = props.timeJudgeData.mm;
-    }
-    if ((props.timeJudgeData.hh > 0) || (props.timeJudgeData.mm > 0) || (props.timeJudgeData.ss > 0)) {
-        defaultSs = props.timeJudgeData.ss;
-    }
-    const [hh, setHh] = React.useState<number | undefined>(defaultHh);
-    const [mm, setMm] = React.useState<number | undefined>(defaultMm);
-    const [ss, setSs] = React.useState<number | undefined>(defaultSs);
-    const [judge, setJudge] = React.useState(defaultJudge);
+    const { open, bib, tag, startOrFinish, timeJudgeData, onChange, onClose, } = props;
+    const { hh, mm, ss, judge } = timeJudgeData;
 
-    const resetData = () => {
-        setHh(defaultHh);
-        setMm(defaultMm);
-        setSs(defaultSs);
-        setJudge(defaultJudge);
+    const onChangeValues = (name: string, value: any) => {
+        onChange({
+            ...timeJudgeData,
+            [name]: value,
+        });
     };
 
-    React.useEffect(() => {
-        resetData();
-    }, [props.open]);
+    const onChangeHh = (e: any) => {
+        onChangeValues('hh', e.target.value);
+    };
+
+    const onChangeMm = (e: any) => {
+        onChangeValues('mm', e.target.value);
+    };
+
+    const onChangeSs = (e: any) => {
+        onChangeValues('ss', e.target.value);
+    };
+
+    const onSelectedJudge = (judge: string) => {
+        onChangeValues('judge', judge);
+    };
+
+    const onCancel = () => {
+        onClose(false);
+    };
+
+    const onApply = () => {
+        onClose(true);
+    };
 
     const onFocus = (e: any) => {
         e.target.select();
     }
-
-    const onChangeHh = (e: any) => {
-        setHh(e.target.value);
-    };
-
-    const onChangeMm = (e: any) => {
-        setMm(e.target.value)
-    };
-
-    const onChangeSs = (e: any) => {
-        setSs(e.target.value);
-    };
-
-    const onSelectedJudge = (judge: string) => {
-        setJudge(judge);
-    };
-
-    const onClose = () => {
-        resetData();
-        props.onCancel();
-    };
-
-    const onApply = () => {
-        const timeJudgeData: TimeJudgeData = {
-            hh: hh ? Number(hh) : 0,
-            mm: mm ? Number(mm) : 0,
-            ss: ss ? Number(ss) : 0,
-            judge
-        };
-
-        if (timeJudgeData.hh > 0) {
-            setHh(timeJudgeData.hh);
-        } else {
-            setHh(undefined);
-        }
-        if ((timeJudgeData.hh > 0) || (timeJudgeData.mm > 0)) {
-            setMm(timeJudgeData.mm);
-        } else {
-            setMm(undefined);
-        }
-        if ((timeJudgeData.hh > 0) || (timeJudgeData.mm > 0) || (timeJudgeData.ss > 0)) {
-            setSs(timeJudgeData.ss);
-        } else {
-            setSs(undefined);
-        }
-
-        props.onApply(timeJudgeData);
-    };
 
     const timeSx = {
         width: "40px",
@@ -313,14 +270,16 @@ export default function TimeJudgeDialog(props: TimeJudgeDialogProps) {
             fontSize: "1.6rem"
         }
     };
+
     const timeSsSx = {
         ...timeSx,
         width: "90px"
     };
+
     return (
-        <Dialog open={props.open} onClose={onClose}>
+        <Dialog open={open} onClose={onCancel}>
             <DialogTitle>
-                [{props.bib}] {props.startOrFinish}
+                {startOrFinish}: [{bib}] {tag}
             </DialogTitle>
             <DialogContent>
                 <Stack spacing={1} direction="column">
@@ -364,14 +323,14 @@ export default function TimeJudgeDialog(props: TimeJudgeDialogProps) {
                         />
                     </Stack>
                     <JudgeButton
-                        startOrFinish={props.startOrFinish}
+                        startOrFinish={startOrFinish}
                         judge={judge}
                         onSelected={onSelectedJudge}
                     />
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={onCancel}>Cancel</Button>
                 <Button onClick={onApply}>OK</Button>
             </DialogActions>
         </Dialog>
