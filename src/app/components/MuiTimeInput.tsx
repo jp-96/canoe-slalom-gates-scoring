@@ -37,36 +37,33 @@ function TimeField({ bib, tag, startOrFinish, seconds, judge, isError = false, i
     const ssPart = mmPart.length > 0 ? ('0' + hms.seconds.toFixed(3)).slice(-6) : hms.seconds > 0 ? hms.seconds.toFixed(3) : '-.---';
     const timeText = hhPart + mmPart + ssPart;
 
-    const defaultTimeJudgeData: TimeJudgeData = {
-        hh: hms.hours,
-        mm: hms.minutes,
-        ss: hms.seconds,
+    let hh: number | undefined = undefined;
+    let mm: number | undefined = undefined;
+    let ss: number | undefined = undefined;
+    if (hms.hours > 0) {
+        hh = hms.hours;
+    }
+    if ((hms.hours > 0) || (hms.minutes > 0)) {
+        mm = hms.minutes;
+    }
+    if ((hms.hours > 0) || (hms.minutes > 0) || (hms.seconds > 0)) {
+        ss = hms.seconds;
+    }
+    const originTimeJudgeData: TimeJudgeData = {
+        hh,
+        mm,
+        ss,
         judge,
     };
-    const [timeJudgeData, setTimeJudgeData] = React.useState(defaultTimeJudgeData);
+
+    const [timeJudgeData, setTimeJudgeData] = React.useState(originTimeJudgeData);
     const [open, setOpen] = React.useState(false);
 
     const handleEdit = () => {
         if (isLocked) {
             return;
         }
-        let hh: number | undefined = undefined;
-        let mm: number | undefined = undefined;
-        let ss: number | undefined = undefined;
-        const judge = timeJudgeData.judge;
-        const h = timeJudgeData.hh ? Number(timeJudgeData.hh) : 0;
-        const m = timeJudgeData.mm ? Number(timeJudgeData.mm) : 0;
-        const s = timeJudgeData.ss ? Number(timeJudgeData.ss) : 0;
-        if (h > 0) {
-            hh = h;
-        }
-        if ((h > 0) || (m > 0)) {
-            mm = m;
-        }
-        if ((h > 0) || (m > 0) || (s > 0)) {
-            ss = s;
-        }
-        setTimeJudgeData({ hh, mm, ss, judge, });
+        setTimeJudgeData(originTimeJudgeData);
         setOpen(true);
     };
 
@@ -96,12 +93,15 @@ function TimeField({ bib, tag, startOrFinish, seconds, judge, isError = false, i
             break;
         case 'DNS':
             judgeText = 'DNS';
+            buttonVariant = 'outlined';
             break;
         case 'DNF':
             judgeText = 'DNF';
+            buttonVariant = 'outlined';
             break;
         case 'DSQ':
             judgeText = 'DSQ';
+            buttonVariant = 'outlined';
             break;
         default:
             judgeText = '---';
