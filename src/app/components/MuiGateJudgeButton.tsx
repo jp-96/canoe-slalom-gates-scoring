@@ -32,8 +32,8 @@ function JudgeButton({ judge, isError = false, isFailure = false, isLoading = fa
 
     const color = isLoading ? 'secondary' : isFailure ? 'warning' : isError ? 'error' : 'primary'
     const sx = {
-        width: "44px",
-        height: "42px",
+        width: "64px",
+        height: "44px",
         fontSize: "1.2rem",
     };
     const sxLeft = {
@@ -60,7 +60,7 @@ function JudgeButton({ judge, isError = false, isFailure = false, isLoading = fa
     );
 }
 
-export default function MuiGateJudgeButton({ row, num, judge, isDownStream = true, isError = false, isFailure = false, isLoading = false, isLocked = false }) {
+export default function MuiGateJudgeButton({ row, bib, tag, num, judge, isDownStream = true, isError = false, isFailure = false, isLoading = false, isLocked = false }) {
     const { setGateJudge } = useData();
     const onSelectedJudge = judge => {
         if ((!isLoading) && (!isLocked)) {
